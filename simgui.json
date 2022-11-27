@@ -6,6 +6,21 @@
     },
     "windows": {
       "/SmartDashboard/Field": {
+        "PoseEstimator": {
+          "arrowColor": [
+            1.0,
+            0.0,
+            0.7058825492858887,
+            255.0
+          ],
+          "color": [
+            0.0,
+            0.029412031173706055,
+            1.0,
+            255.0
+          ],
+          "style": "Box/Image"
+        },
         "window": {
           "visible": true
         }
@@ -23,6 +38,17 @@
         },
         "open": true
       }
+    }
+  },
+  "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "open": true
     }
   },
   "Plot": {

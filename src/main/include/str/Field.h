@@ -14,6 +14,7 @@ namespace str {
     void operator=(Field const&) = delete;
 
     void SetRobotPosition(const frc::Pose2d& newPosition);
+    void SetObjectPosition(std::string_view object_name, const frc::Pose2d& newPosition);
     frc::Field2d* GetField() {
       return &field;
     };

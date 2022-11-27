@@ -8,8 +8,11 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <iostream>
 
-str::DiffDrivebase::DiffDrivebase() {
+str::DiffDrivebase::DiffDrivebase(int flCanId, int frCanId, int rLCanId, int rRCanId) :
+  frontLeftController(flCanId), frontRightController(frCanId), rearLeftController(rLCanId),
+  rearRightController(rRCanId) {
   ConfigureDriveMotors();
+  ResetPose();
   frc::SmartDashboard::PutData("IMU", &imu);
   frc::SmartDashboard::PutData("Field", str::Field::GetInstance().GetField());
 }
@@ -23,13 +26,18 @@ frc::Pose2d str::DiffDrivebase::GetRobotPoseBasedOnOdometry() {
 }
 
 void str::DiffDrivebase::Periodic() {
-  driveOdometry.Update(
-    imu.GetYaw(),
-    ConvertDriveEncoderTicksToDistance(frontLeftController.GetSelectedSensorPosition()),
-    ConvertDriveEncoderTicksToDistance(frontRightController.GetSelectedSensorPosition())
-  );
+  frc::Rotation2d currentYaw = imu.GetYaw();
+
+  units::meter_t currentLeftDist = ConvertDriveEncoderTicksToDistance(frontLeftController.GetSelectedSensorPosition());
+  units::meter_t currentRightDist =
+    ConvertDriveEncoderTicksToDistance(frontRightController.GetSelectedSensorPosition());
+
+  driveOdometry.Update(currentYaw, currentLeftDist, currentRightDist);
+
+  driveEstimator.Update(currentYaw, GetWheelSpeeds(), currentLeftDist, currentRightDist);
 
   str::Field::GetInstance().SetRobotPosition(driveOdometry.GetPose());
+  str::Field::GetInstance().SetObjectPosition("PoseEstimator", driveEstimator.GetEstimatedPosition());
 }
 
 void str::DiffDrivebase::SimulationPeriodic() {
@@ -69,7 +77,6 @@ void str::DiffDrivebase::SimulationPeriodic() {
   ));
 
   auto heading = drivetrainSimulator.GetHeading().Radians();
-  frc::DataLogManager::Log("DT SIM HEADING: " + units::to_string(heading));
   imu.SetYaw(heading);
 
   leftSideSim.SetBusVoltage(frc::RobotController::GetBatteryVoltage().to<double>());
@@ -77,7 +84,7 @@ void str::DiffDrivebase::SimulationPeriodic() {
 }
 
 void str::DiffDrivebase::ArcadeDrive(double fow, double rot) {
-  drive.ArcadeDrive(fow, rot, true);
+  drive.ArcadeDrive(-fow, -rot, true);
 }
 
 ctre::phoenix::motorcontrol::can::TalonFXConfiguration str::DiffDrivebase::ConfigureBaseMotorControllerSettings() {
@@ -147,6 +154,46 @@ void str::DiffDrivebase::ConfigureDriveMotors() {
   frontRightController.SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
   rearLeftController.SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
   rearRightController.SetNeutralMode(ctre::phoenix::motorcontrol::NeutralMode::Brake);
+}
+
+void str::DiffDrivebase::ResetEncoders() {
+  leftSideSim.SetIntegratedSensorRawPosition(0);
+  leftSideSim.SetIntegratedSensorVelocity(0);
+  rightSideSim.SetIntegratedSensorRawPosition(0);
+  rightSideSim.SetIntegratedSensorVelocity(0);
+  frontLeftController.SetSelectedSensorPosition(0);
+  frontRightController.SetSelectedSensorPosition(0);
+  rearLeftController.SetSelectedSensorPosition(0);
+  rearRightController.SetSelectedSensorPosition(0);
+}
+
+frc::DifferentialDriveWheelSpeeds str::DiffDrivebase::GetWheelSpeeds() {
+  return {
+    str::Units::ConvertAngularVelocityToLinearVelocity(
+      str::Units::ConvertTicksPer100MsToAngularVelocity(
+        frontLeftController.GetSelectedSensorVelocity(),
+        str::encoder_cprs::FALCON_CPR,
+        str::physical_dims::DRIVEBASE_GEARBOX_RATIO
+      ),
+      str::physical_dims::DRIVE_WHEEL_DIAMETER / 2
+    ),
+    str::Units::ConvertAngularVelocityToLinearVelocity(
+      str::Units::ConvertTicksPer100MsToAngularVelocity(
+        frontRightController.GetSelectedSensorVelocity(),
+        str::encoder_cprs::FALCON_CPR,
+        str::physical_dims::DRIVEBASE_GEARBOX_RATIO
+      ),
+      str::physical_dims::DRIVE_WHEEL_DIAMETER / 2
+    )};
+}
+
+void str::DiffDrivebase::ResetPose(const frc::Pose2d& newPose) {
+  ResetEncoders();
+  imu.SetOffset(newPose.Rotation().Radians());
+  imu.ZeroYaw();
+  drivetrainSimulator.SetPose(newPose);
+  driveOdometry.ResetPosition(imu.GetYaw(), 0_m, 0_m, newPose);
+  driveEstimator.ResetPosition(imu.GetYaw(), 0_m, 0_m, newPose);
 }
 
 units::meter_t str::DiffDrivebase::ConvertDriveEncoderTicksToDistance(int ticks) {

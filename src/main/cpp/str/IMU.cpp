@@ -30,7 +30,7 @@ frc::Rotation2d str::IMU::GetYaw() {
 }
 
 units::radians_per_second_t str::IMU::GetYawRate() {
-  return units::degrees_per_second_t(navxGyro.GetRate());
+  return units::degrees_per_second_t(-navxGyro.GetRate());
 }
 
 units::radian_t str::IMU::GetOffset() {
@@ -67,18 +67,14 @@ void str::IMU::InitSendable(wpi::SendableBuilder& builder) {
     [this] {
       return GetYaw().Degrees().to<double>();
     },
-    [this](double newYawRads) {
-      SetYaw(units::radian_t(newYawRads));
-    }
+    nullptr
   );
   builder.AddDoubleProperty(
     "imu_rate_radpers",
     [this] {
       return GetYawRate().to<double>();
     },
-    [this](double newYawRateRadPerSec) {
-      SetRate(units::radians_per_second_t(newYawRateRadPerSec));
-    }
+    nullptr
   );
   builder.AddDoubleProperty(
     "imu_offset_rad",

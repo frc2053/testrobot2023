@@ -26,4 +26,16 @@ namespace str {
     extern const frc::DifferentialDriveKinematics DRIVE_KINEMATICS;
     extern const frc::LinearSystem<2, 2, 2> DRIVE_TRAIN_PLANT;
   }   // namespace drive_consts
+
+  namespace swerve_consts {
+    static constexpr double STEER_KF = 0;
+    static constexpr double STEER_KP = 0;
+    static constexpr double STEER_KI = 0;
+    static constexpr double STEER_KD = 0;
+
+    static constexpr double DRIVE_KF = 0;
+    static constexpr double DRIVE_KP = 0;
+    static constexpr double DRIVE_KI = 0;
+    static constexpr double DRIVE_KD = 0;
+  }   // namespace swerve_consts
 }   // namespace str
