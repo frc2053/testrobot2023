@@ -16,10 +16,21 @@ frc::Pose2d str::SwerveDrivebase::GetRobotPoseBasedOnOdometry() {
   return frc::Pose2d();
 }
 
+void str::SwerveDrivebase::Drive(double fow, double side, double rot) {
+}
+
 void str::SwerveDrivebase::Periodic() {
+  flModule.Periodic();
+  frModule.Periodic();
+  blModule.Periodic();
+  brModule.Periodic();
 }
 
 void str::SwerveDrivebase::SimulationPeriodic() {
+  flModule.SimulationPeriodic();
+  frModule.SimulationPeriodic();
+  blModule.SimulationPeriodic();
+  brModule.SimulationPeriodic();
 }
 
 void str::SwerveDrivebase::ResetPose(const frc::Pose2d& newPose) {

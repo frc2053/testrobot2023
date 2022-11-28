@@ -1,5 +1,6 @@
 #include "str/DiffDrivebase.h"
-#include "constants/Encoders.h"
+#include "Constants.h"
+#include "constants/DiffDriveConstants.h"
 #include "str/Field.h"
 #include "str/Units.h"
 #include <frc/DataLogManager.h>
@@ -8,9 +9,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <iostream>
 
-str::DiffDrivebase::DiffDrivebase(int flCanId, int frCanId, int rLCanId, int rRCanId) :
-  frontLeftController(flCanId), frontRightController(frCanId), rearLeftController(rLCanId),
-  rearRightController(rRCanId) {
+str::DiffDrivebase::DiffDrivebase() {
   ConfigureDriveMotors();
   ResetPose();
   frc::SmartDashboard::PutData("IMU", &imu);
@@ -50,30 +49,30 @@ void str::DiffDrivebase::SimulationPeriodic() {
   leftSideSim.SetIntegratedSensorRawPosition(str::Units::ConvertDistanceToEncoderTicks(
     drivetrainSimulator.GetLeftPosition(),
     str::encoder_cprs::FALCON_CPR,
-    str::physical_dims::DRIVEBASE_GEARBOX_RATIO,
-    str::physical_dims::DRIVE_WHEEL_DIAMETER / 2
+    str::diff_physical_dims::DRIVEBASE_GEARBOX_RATIO,
+    str::diff_physical_dims::DRIVE_WHEEL_DIAMETER / 2
   ));
   leftSideSim.SetIntegratedSensorVelocity(str::Units::ConvertAngularVelocityToTicksPer100Ms(
     str::Units::ConvertLinearVelocityToAngularVelocity(
       drivetrainSimulator.GetLeftVelocity(),
-      str::physical_dims::DRIVE_WHEEL_DIAMETER / 2
+      str::diff_physical_dims::DRIVE_WHEEL_DIAMETER / 2
     ),
     str::encoder_cprs::FALCON_CPR,
-    str::physical_dims::DRIVEBASE_GEARBOX_RATIO
+    str::diff_physical_dims::DRIVEBASE_GEARBOX_RATIO
   ));
   rightSideSim.SetIntegratedSensorRawPosition(str::Units::ConvertDistanceToEncoderTicks(
     drivetrainSimulator.GetRightPosition(),
     str::encoder_cprs::FALCON_CPR,
-    str::physical_dims::DRIVEBASE_GEARBOX_RATIO,
-    str::physical_dims::DRIVE_WHEEL_DIAMETER / 2
+    str::diff_physical_dims::DRIVEBASE_GEARBOX_RATIO,
+    str::diff_physical_dims::DRIVE_WHEEL_DIAMETER / 2
   ));
   rightSideSim.SetIntegratedSensorVelocity(str::Units::ConvertAngularVelocityToTicksPer100Ms(
     str::Units::ConvertLinearVelocityToAngularVelocity(
       drivetrainSimulator.GetRightVelocity(),
-      str::physical_dims::DRIVE_WHEEL_DIAMETER / 2
+      str::diff_physical_dims::DRIVE_WHEEL_DIAMETER / 2
     ),
     str::encoder_cprs::FALCON_CPR,
-    str::physical_dims::DRIVEBASE_GEARBOX_RATIO
+    str::diff_physical_dims::DRIVEBASE_GEARBOX_RATIO
   ));
 
   auto heading = drivetrainSimulator.GetHeading().Radians();
@@ -100,10 +99,10 @@ ctre::phoenix::motorcontrol::can::TalonFXConfiguration str::DiffDrivebase::Confi
   config.reverseLimitSwitchNormal = ctre::phoenix::motorcontrol::LimitSwitchNormal::LimitSwitchNormal_Disabled;
 
   // PIDs for velocity control
-  config.slot0.kF = str::drive_consts::kF;
-  config.slot0.kP = str::drive_consts::kP;
-  config.slot0.kI = str::drive_consts::kI;
-  config.slot0.kD = str::drive_consts::kD;
+  config.slot0.kF = str::diff_drive_consts::kF;
+  config.slot0.kP = str::diff_drive_consts::kP;
+  config.slot0.kI = str::diff_drive_consts::kI;
+  config.slot0.kD = str::diff_drive_consts::kD;
 
   // sets how often the falcon calculates the velocity. We want this as fast as
   // possible to minimize sensor delay
@@ -113,7 +112,7 @@ ctre::phoenix::motorcontrol::can::TalonFXConfiguration str::DiffDrivebase::Confi
   // sets the maximum voltage of the drive motors to 10 volts to make the robot
   // more consistant during auto this is because the batter will sag below 12
   // volts under load.
-  config.voltageCompSaturation = str::drive_consts::MAX_DRIVE_VOLTAGE.to<double>();
+  config.voltageCompSaturation = str::diff_drive_consts::MAX_DRIVE_VOLTAGE.to<double>();
 
   return config;
 }
@@ -165,6 +164,7 @@ void str::DiffDrivebase::ResetEncoders() {
   frontRightController.SetSelectedSensorPosition(0);
   rearLeftController.SetSelectedSensorPosition(0);
   rearRightController.SetSelectedSensorPosition(0);
+  frc::DataLogManager::Log("Reset Encoders for Diff Drive!");
 }
 
 frc::DifferentialDriveWheelSpeeds str::DiffDrivebase::GetWheelSpeeds() {
@@ -173,17 +173,17 @@ frc::DifferentialDriveWheelSpeeds str::DiffDrivebase::GetWheelSpeeds() {
       str::Units::ConvertTicksPer100MsToAngularVelocity(
         frontLeftController.GetSelectedSensorVelocity(),
         str::encoder_cprs::FALCON_CPR,
-        str::physical_dims::DRIVEBASE_GEARBOX_RATIO
+        str::diff_physical_dims::DRIVEBASE_GEARBOX_RATIO
       ),
-      str::physical_dims::DRIVE_WHEEL_DIAMETER / 2
+      str::diff_physical_dims::DRIVE_WHEEL_DIAMETER / 2
     ),
     str::Units::ConvertAngularVelocityToLinearVelocity(
       str::Units::ConvertTicksPer100MsToAngularVelocity(
         frontRightController.GetSelectedSensorVelocity(),
         str::encoder_cprs::FALCON_CPR,
-        str::physical_dims::DRIVEBASE_GEARBOX_RATIO
+        str::diff_physical_dims::DRIVEBASE_GEARBOX_RATIO
       ),
-      str::physical_dims::DRIVE_WHEEL_DIAMETER / 2
+      str::diff_physical_dims::DRIVE_WHEEL_DIAMETER / 2
     )};
 }
 
@@ -194,14 +194,15 @@ void str::DiffDrivebase::ResetPose(const frc::Pose2d& newPose) {
   drivetrainSimulator.SetPose(newPose);
   driveOdometry.ResetPosition(imu.GetYaw(), 0_m, 0_m, newPose);
   driveEstimator.ResetPosition(imu.GetYaw(), 0_m, 0_m, newPose);
+  frc::DataLogManager::Log("Reset Pose for Diff Drive!");
 }
 
 units::meter_t str::DiffDrivebase::ConvertDriveEncoderTicksToDistance(int ticks) {
   return str::Units::ConvertEncoderTicksToDistance(
     ticks,
     str::encoder_cprs::FALCON_CPR,
-    str::physical_dims::DRIVEBASE_GEARBOX_RATIO,
-    str::physical_dims::DRIVE_WHEEL_DIAMETER / 2
+    str::diff_physical_dims::DRIVEBASE_GEARBOX_RATIO,
+    str::diff_physical_dims::DRIVE_WHEEL_DIAMETER / 2
   );
 }
 
@@ -210,8 +211,8 @@ units::meters_per_second_t str::DiffDrivebase::ConvertDriveEncoderSpeedToVelocit
     str::Units::ConvertTicksPer100MsToAngularVelocity(
       ticksPer100Ms,
       str::encoder_cprs::FALCON_CPR,
-      str::physical_dims::DRIVEBASE_GEARBOX_RATIO
+      str::diff_physical_dims::DRIVEBASE_GEARBOX_RATIO
     ),
-    str::physical_dims::DRIVE_WHEEL_DIAMETER / 2
+    str::diff_physical_dims::DRIVE_WHEEL_DIAMETER / 2
   );
 }

@@ -2,12 +2,20 @@
 
 #include <frc/kinematics/DifferentialDriveKinematics.h>
 #include <frc/system/LinearSystem.h>
+#include <frc/system/plant/DCMotor.h>
 #include <units/acceleration.h>
 #include <units/velocity.h>
 #include <units/voltage.h>
 
 namespace str {
-  namespace drive_consts {
+  namespace diff_can_ids {
+    static constexpr int FRONT_LEFT_DRIVEBASE_TALON_ID = 2;
+    static constexpr int REAR_LEFT_DRIVEBASE_TALON_ID = 3;
+    static constexpr int FRONT_RIGHT_DRIVEBASE_TALON_ID = 4;
+    static constexpr int REAR_RIGHT_DRIVEBASE_TALON_ID = 5;
+  }   // namespace diff_can_ids
+
+  namespace diff_drive_consts {
     // Motor Velocity PID values
     static constexpr double kF = 0;
     static constexpr double kP = 0;
@@ -25,17 +33,12 @@ namespace str {
 
     extern const frc::DifferentialDriveKinematics DRIVE_KINEMATICS;
     extern const frc::LinearSystem<2, 2, 2> DRIVE_TRAIN_PLANT;
-  }   // namespace drive_consts
+  }   // namespace diff_drive_consts
 
-  namespace swerve_consts {
-    static constexpr double STEER_KF = 0;
-    static constexpr double STEER_KP = 0;
-    static constexpr double STEER_KI = 0;
-    static constexpr double STEER_KD = 0;
-
-    static constexpr double DRIVE_KF = 0;
-    static constexpr double DRIVE_KP = 0;
-    static constexpr double DRIVE_KI = 0;
-    static constexpr double DRIVE_KD = 0;
-  }   // namespace swerve_consts
+  namespace diff_physical_dims {
+    static constexpr units::meter_t WHEELBASE_WIDTH = 27_in;
+    static constexpr units::meter_t DRIVE_WHEEL_DIAMETER = 4_in;
+    static constexpr double DRIVEBASE_GEARBOX_RATIO = 7.0;
+    static constexpr auto DRIVEBASE_GEARBOX = frc::DCMotor::Falcon500(2);
+  }   // namespace diff_physical_dims
 }   // namespace str

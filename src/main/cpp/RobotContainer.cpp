@@ -4,9 +4,21 @@
 
 RobotContainer::RobotContainer() {
   // Initialize all of your commands and subsystems here
-  m_subsystem.SetDefaultCommand(m_subsystem.ArcadeDriveFactory(
+  // m_subsystem.SetDefaultCommand(m_subsystem.ArcadeDriveFactory(
+  //   [this] {
+  //     return m_driverController.GetLeftY();
+  //   },
+  //   [this] {
+  //     return m_driverController.GetRightX();
+  //   }
+  // ));
+
+  m_subsystem.SetDefaultCommand(m_subsystem.DriveFactory(
     [this] {
       return m_driverController.GetLeftY();
+    },
+    [this] {
+      return m_driverController.GetLeftX();
     },
     [this] {
       return m_driverController.GetRightX();

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <AHRS.h>
-#include <constants/CanIds.h>
 #include <frc/geometry/Rotation2d.h>
 #include <hal/SimDevice.h>
 #include <hal/simulation/SimDeviceData.h>
