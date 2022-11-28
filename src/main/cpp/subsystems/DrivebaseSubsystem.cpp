@@ -34,7 +34,13 @@ frc2::CommandPtr DrivebaseSubsystem::DriveFactory(
 ) {
   return frc2::RunCommand(
            [this, fow, side, rot]() {
-             swerveDrivebase.Drive(fow(), side(), rot());
+             swerveDrivebase.Drive(
+               fow() * str::swerve_drive_consts::MAX_CHASSIS_SPEED,
+               side() * str::swerve_drive_consts::MAX_CHASSIS_SPEED,
+               rot() * str::swerve_drive_consts::MAX_CHASSIS_ROT_SPEED,
+               true,
+               false
+             );
            },
            {this}
   )

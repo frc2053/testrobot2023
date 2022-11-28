@@ -11,12 +11,79 @@ str::SwerveModule::SwerveModule(int driveCanId, int rotationCanId) :
   steeringEncoder = std::make_unique<rev::SparkMaxRelativeEncoder>(steeringMotorController.GetEncoder());
   ConfigureSteeringMotor();
   ConfigureDriveMotor();
+  ffTimer.Reset();
+  ffTimer.Start();
 }
 
 void str::SwerveModule::Periodic() {
 }
 
 void str::SwerveModule::SimulationPeriodic() {
+  driveMotorSim.SetIntegratedSensorRawPosition(str::Units::ConvertDistanceToEncoderTicks(
+    drivetrainSimulator.GetLeftPosition(),
+    str::encoder_cprs::FALCON_CPR,
+    str::swerve_physical_dims::DRIVE_GEARBOX_RATIO,
+    str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
+  ));
+  driveMotorSim.SetIntegratedSensorVelocity(str::Units::ConvertAngularVelocityToTicksPer100Ms(
+    str::Units::ConvertLinearVelocityToAngularVelocity(
+      drivetrainSimulator.GetLeftVelocity(),
+      str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
+    ),
+    str::encoder_cprs::FALCON_CPR,
+    str::swerve_physical_dims::DRIVE_GEARBOX_RATIO
+  ));
+}
+
+frc::SwerveModuleState str::SwerveModule::GetState() {
+  frc::SwerveModuleState state;
+
+  state.speed = ConvertDriveEncoderSpeedToVelocity(driveMotorController.GetSelectedSensorVelocity());
+  state.angle = frc::Rotation2d(units::radian_t(steeringEncoder->GetPosition()));
+
+  return state;
+}
+
+frc::SwerveModulePosition str::SwerveModule::GetPosition() {
+  frc::SwerveModulePosition position;
+
+  position.distance = ConvertDriveEncoderTicksToDistance(driveMotorController.GetSelectedSensorPosition());
+  position.angle = frc::Rotation2d(units::radian_t(steeringEncoder->GetPosition()));
+
+  return position;
+}
+
+void str::SwerveModule::SetDesiredState(const frc::SwerveModuleState& referenceState, bool openLoop) {
+  const frc::SwerveModuleState state =
+    frc::SwerveModuleState::Optimize(referenceState, units::radian_t(steeringEncoder->GetPosition()));
+
+  units::volt_t driveFFResult = 12_V;
+  units::second_t timeElapsed = ffTimer.Get();
+  units::second_t dt = timeElapsed - prevTime;
+  if(!openLoop) {
+    driveFFResult = driveFF.Calculate(state.speed, (state.speed - prevModuleSpeed) / dt);
+  }
+
+  int falconSetpoint = str::Units::ConvertAngularVelocityToTicksPer100Ms(
+    str::Units::ConvertLinearVelocityToAngularVelocity(
+      state.speed,
+      str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
+    ),
+    str::encoder_cprs::FALCON_CPR,
+    str::swerve_physical_dims::DRIVE_GEARBOX_RATIO
+  );
+
+  driveMotorController.Set(
+    ctre::phoenix::motorcontrol::ControlMode::Velocity,
+    falconSetpoint,
+    ctre::phoenix::motorcontrol::DemandType::DemandType_ArbitraryFeedForward,
+    (driveFFResult / 12_V).to<double>()
+  );
+
+  steeringPIDController->SetReference(state.angle.Radians().to<double>(), rev::ControlType::kPosition);
+
+  prevModuleSpeed = state.speed;
+  prevTime = timeElapsed;
 }
 
 ctre::phoenix::motorcontrol::can::TalonFXConfiguration str::SwerveModule::ConfigureBaseMotorControllerSettings() {
@@ -76,10 +143,16 @@ void str::SwerveModule::ConfigureSteeringMotor() {
   steeringPIDController->SetI(str::swerve_drive_consts::STEER_KI);
   steeringPIDController->SetD(str::swerve_drive_consts::STEER_KD);
 
+  steeringEncoder->SetPositionConversionFactor(2 * std::numbers::pi);
+
   steeringMotorController.BurnFlash();
 }
 
 void str::SwerveModule::ResetEncoders() {
+  steeringEncoder->SetPosition(0);
+  driveMotorController.SetSelectedSensorPosition(0);
+  driveMotorSim.SetIntegratedSensorVelocity(0);
+  driveMotorSim.SetIntegratedSensorRawPosition(0);
 }
 
 units::meter_t str::SwerveModule::ConvertDriveEncoderTicksToDistance(int ticks) {

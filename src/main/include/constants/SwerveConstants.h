@@ -1,7 +1,9 @@
 #pragma once
 
 #include <frc/system/plant/DCMotor.h>
+#include <units/acceleration.h>
 #include <units/length.h>
+#include <units/velocity.h>
 
 namespace str {
   namespace swerve_can_ids {
@@ -26,7 +28,18 @@ namespace str {
     static constexpr double DRIVE_KI = 0;
     static constexpr double DRIVE_KD = 0;
 
+    static constexpr auto DRIVE_KS = 0.46814_V;
+    static constexpr auto DRIVE_KV = 2.4253 * 1_V / 1_mps;
+    static constexpr auto DRIVE_KA = 0.12445 * 1_V / 1_mps_sq;
+
+    static constexpr auto STEER_KS = 0.46814_V;
+    static constexpr auto STEER_KV = 2.4253 * 1_V / 1_mps;
+    static constexpr auto STEER_KA = 0.12445 * 1_V / 1_mps_sq;
+
     static constexpr units::volt_t MAX_DRIVE_VOLTAGE = 10_V;
+
+    static constexpr units::meters_per_second_t MAX_CHASSIS_SPEED = 13_fps;
+    static constexpr units::radians_per_second_t MAX_CHASSIS_ROT_SPEED = 360_deg_per_s;
   }   // namespace swerve_drive_consts
 
   namespace swerve_physical_dims {

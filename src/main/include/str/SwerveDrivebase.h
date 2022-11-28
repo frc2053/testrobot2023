@@ -7,6 +7,8 @@
 #include <frc/geometry/Pose2d.h>
 #include <frc/geometry/Rotation2d.h>
 #include <frc/geometry/Translation2d.h>
+#include <frc/kinematics/SwerveDriveKinematics.h>
+#include <frc/kinematics/SwerveDriveOdometry.h>
 #include <units/velocity.h>
 
 namespace str {
@@ -18,7 +20,13 @@ namespace str {
     void Periodic();
     void SimulationPeriodic();
     void ResetPose(const frc::Pose2d& newPose = frc::Pose2d());
-    void Drive(double fow, double side, double rot);
+    void Drive(
+      units::meters_per_second_t xSpeed,
+      units::meters_per_second_t ySpeed,
+      units::radians_per_second_t rotSpeed,
+      bool fieldRelative,
+      bool openLoopDrive
+    );
 
   private:
     str::IMU imu{};
@@ -48,5 +56,11 @@ namespace str {
     str::SwerveModule brModule{
       str::swerve_can_ids::REAR_RIGHT_DRIVE_TALON_ID,
       str::swerve_can_ids::REAR_RIGHT_STEER_TALON_ID};
+
+    frc::SwerveDriveKinematics<4> kinematics{flLocation, frLocation, blLocation, brLocation};
+    frc::SwerveDriveOdometry<4> odometry{
+      kinematics,
+      imu.GetYaw(),
+      {flModule.GetPosition(), frModule.GetPosition(), blModule.GetPosition(), brModule.GetPosition()}};
   };
 }   // namespace str

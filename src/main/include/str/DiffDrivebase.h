@@ -41,7 +41,7 @@ namespace str {
 
     frc::DifferentialDrive drive{frontLeftController, frontRightController};
 
-    frc::DifferentialDriveOdometry driveOdometry{0_deg, 0_m, 0_m};
+    frc::DifferentialDriveOdometry driveOdometry{imu.GetYaw(), 0_m, 0_m};
     frc::DifferentialDrivePoseEstimator driveEstimator{
       frc::Rotation2d{0_deg},
       0_m,
