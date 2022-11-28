@@ -7,8 +7,11 @@
 #include <frc/geometry/Translation2d.h>
 #include <frc/kinematics/SwerveModulePosition.h>
 #include <frc/kinematics/SwerveModuleState.h>
+#include <frc/simulation/FlywheelSim.h>
+#include <frc/system/plant/DCMotor.h>
 #include <rev/CANSparkMax.h>
 #include <rev/SparkMaxPIDController.h>
+#include <units/moment_of_inertia.h>
 #include <units/velocity.h>
 
 namespace str {
@@ -43,5 +46,17 @@ namespace str {
     rev::CANSparkMax steeringMotorController;
     std::unique_ptr<rev::SparkMaxPIDController> steeringPIDController;
     std::unique_ptr<rev::SparkMaxRelativeEncoder> steeringEncoder;
+
+    frc::sim::FlywheelSim driveSim{
+      str::swerve_physical_dims::DRIVE_GEARBOX,
+      str::swerve_physical_dims::DRIVE_GEARBOX_RATIO,
+      0.025_kg_sq_m};
+
+    frc::sim::FlywheelSim steerSim{
+      str::swerve_physical_dims::STEER_GEARBOX,
+      str::swerve_physical_dims::STEER_GEARBOX_RATIO,
+      0.004096955_kg_sq_m};
+
+    units::meter_t driveTotalDistance{0};
   };
 }   // namespace str

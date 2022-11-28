@@ -60,6 +60,7 @@ void str::SwerveDrivebase::Periodic() {
   frModule.Periodic();
   blModule.Periodic();
   brModule.Periodic();
+  str::Field::GetInstance().SetRobotPosition(odometry.GetPose());
 }
 
 void str::SwerveDrivebase::SimulationPeriodic() {

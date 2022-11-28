@@ -19,20 +19,32 @@ void str::SwerveModule::Periodic() {
 }
 
 void str::SwerveModule::SimulationPeriodic() {
+  driveSim.SetInputVoltage(units::volt_t{driveMotorController.GetMotorOutputVoltage()});
+  driveSim.Update(20_ms);
+
+  steerSim.SetInputVoltage(units::volt_t{
+    steeringMotorController.GetAppliedOutput() / steeringMotorController.GetVoltageCompensationNominalVoltage()});
+  steerSim.Update(20_ms);
+
+  units::meters_per_second_t currentLinearVel = str::Units::ConvertAngularVelocityToLinearVelocity(
+    driveSim.GetAngularVelocity(),
+    str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
+  );
+
+  driveTotalDistance = driveTotalDistance + (currentLinearVel * 20_ms);
+
   driveMotorSim.SetIntegratedSensorRawPosition(str::Units::ConvertDistanceToEncoderTicks(
-    drivetrainSimulator.GetLeftPosition(),
+    driveTotalDistance,
     str::encoder_cprs::FALCON_CPR,
     str::swerve_physical_dims::DRIVE_GEARBOX_RATIO,
     str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
   ));
   driveMotorSim.SetIntegratedSensorVelocity(str::Units::ConvertAngularVelocityToTicksPer100Ms(
-    str::Units::ConvertLinearVelocityToAngularVelocity(
-      drivetrainSimulator.GetLeftVelocity(),
-      str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
-    ),
+    driveSim.GetAngularVelocity(),
     str::encoder_cprs::FALCON_CPR,
     str::swerve_physical_dims::DRIVE_GEARBOX_RATIO
   ));
+  driveMotorSim.SetBusVoltage(frc::RobotController::GetBatteryVoltage().to<double>());
 }
 
 frc::SwerveModuleState str::SwerveModule::GetState() {
