@@ -39,7 +39,7 @@ frc2::CommandPtr DrivebaseSubsystem::DriveFactory(
                side() * str::swerve_drive_consts::MAX_CHASSIS_SPEED,
                rot() * str::swerve_drive_consts::MAX_CHASSIS_ROT_SPEED,
                true,
-               false
+               true
              );
            },
            {this}

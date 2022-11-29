@@ -3,11 +3,13 @@
 #include "constants/SwerveConstants.h"
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/Timer.h>
+#include <frc/controller/PIDController.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
 #include <frc/geometry/Translation2d.h>
 #include <frc/kinematics/SwerveModulePosition.h>
 #include <frc/kinematics/SwerveModuleState.h>
 #include <frc/simulation/FlywheelSim.h>
+#include <frc/simulation/SimDeviceSim.h>
 #include <frc/system/plant/DCMotor.h>
 #include <rev/CANSparkMax.h>
 #include <rev/SparkMaxPIDController.h>
@@ -31,6 +33,7 @@ namespace str {
     void ConfigureSteeringMotor();
     units::meter_t ConvertDriveEncoderTicksToDistance(int ticks);
     units::meters_per_second_t ConvertDriveEncoderSpeedToVelocity(int ticksPer100Ms);
+    double MapZeroThreeSixtyToOneEighty(double in);
 
     ctre::phoenix::motorcontrol::can::WPI_TalonFX driveMotorController;
     ctre::phoenix::motorcontrol::TalonFXSimCollection driveMotorSim;
@@ -58,5 +61,14 @@ namespace str {
       0.004096955_kg_sq_m};
 
     units::meter_t driveTotalDistance{0};
+    units::radian_t steerTotalAngle{0};
+    HAL_SimDeviceHandle steerMotorSim;
+    hal::SimDouble steerMotorSimPosition;
+    hal::SimDouble steerMotorSimVelocity;
+    hal::SimDouble steerMotorOutput;
+    frc2::PIDController steerSimPid{
+      str::swerve_drive_consts::STEER_KP,
+      str::swerve_drive_consts::STEER_KI,
+      str::swerve_drive_consts::STEER_KD};
   };
 }   // namespace str

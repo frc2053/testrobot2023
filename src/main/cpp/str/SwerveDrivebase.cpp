@@ -2,6 +2,7 @@
 #include "Constants.h"
 #include "str/Field.h"
 #include "str/Units.h"
+#include <frc/RobotBase.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
 str::SwerveDrivebase::SwerveDrivebase() {
@@ -64,6 +65,25 @@ void str::SwerveDrivebase::Periodic() {
 }
 
 void str::SwerveDrivebase::SimulationPeriodic() {
+  auto flPos = flModule.GetPosition();
+  auto frPos = frModule.GetPosition();
+  auto blPos = blModule.GetPosition();
+  auto brPos = brModule.GetPosition();
+
+  auto flPosDiff = (flPos.distance - prevflPos.distance) / 20_ms;
+  auto frPosDiff = (frPos.distance - prevfrPos.distance) / 20_ms;
+  auto blPosDiff = (blPos.distance - prevblPos.distance) / 20_ms;
+  auto brPosDiff = (brPos.distance - prevbrPos.distance) / 20_ms;
+
+  auto flStateDiff = frc::SwerveModuleState{flPosDiff, flModule.GetState().angle};
+  auto frStateDiff = frc::SwerveModuleState{frPosDiff, frModule.GetState().angle};
+  auto blStateDiff = frc::SwerveModuleState{blPosDiff, blModule.GetState().angle};
+  auto brStateDiff = frc::SwerveModuleState{brPosDiff, brModule.GetState().angle};
+
+  auto chassisSpeedDiff = kinematics.ToChassisSpeeds({flStateDiff, frStateDiff, blStateDiff, brStateDiff});
+
+  imu.SetRate(chassisSpeedDiff.omega);
+
   flModule.SimulationPeriodic();
   frModule.SimulationPeriodic();
   blModule.SimulationPeriodic();

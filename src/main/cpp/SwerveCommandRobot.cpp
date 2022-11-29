@@ -1,27 +1,29 @@
-#include "RobotContainer.h"
+#include "SwerveCommandRobot.h"
+#include <frc/DataLogManager.h>
+#include <frc/MathUtil.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/InstantCommand.h>
 
-RobotContainer::RobotContainer() {
+void SwerveCommandRobot::ConfigureBindings() {
   // Initialize all of your commands and subsystems here
-  // m_subsystem.SetDefaultCommand(m_subsystem.ArcadeDriveFactory(
+  // driveSubsystem.SetDefaultCommand(driveSubsystem.ArcadeDriveFactory(
   //   [this] {
-  //     return m_driverController.GetLeftY();
+  //     return driverController.GetLeftY();
   //   },
   //   [this] {
-  //     return m_driverController.GetRightX();
+  //     return driverController.GetRightX();
   //   }
   // ));
 
-  m_subsystem.SetDefaultCommand(m_subsystem.DriveFactory(
+  driveSubsystem.SetDefaultCommand(driveSubsystem.DriveFactory(
     [this] {
-      return m_driverController.GetLeftY();
+      return frc::ApplyDeadband<double>(driverController.GetLeftY(), 0.2);
     },
     [this] {
-      return m_driverController.GetLeftX();
+      return frc::ApplyDeadband<double>(driverController.GetLeftX(), 0.2);
     },
     [this] {
-      return m_driverController.GetRightX();
+      return frc::ApplyDeadband<double>(1, 0.2);
     }
   ));
 
@@ -31,7 +33,7 @@ RobotContainer::RobotContainer() {
 
   frc::SmartDashboard::PutData(
     "Reset Drivetrain Pose",
-    m_subsystem
+    driveSubsystem
       .ResetOdomFactory(
         [this] {
           return frc::SmartDashboard::GetNumber("ResetPose/x_ft", 0);
@@ -45,16 +47,12 @@ RobotContainer::RobotContainer() {
       )
       .get()
   );
-
-  // Configure the button bindings
-  ConfigureButtonBindings();
 }
 
-void RobotContainer::ConfigureButtonBindings() {
-  // Configure your button bindings here
-}
-
-frc2::Command* RobotContainer::GetAutonomousCommand() {
+frc2::CommandPtr SwerveCommandRobot::GetAutonomousCommand() {
   // An example command will be run in autonomous
-  return nullptr;
+  return frc2::InstantCommand{[] {
+           frc::DataLogManager::Log("Test Auto Command");
+         }}
+    .ToPtr();
 }

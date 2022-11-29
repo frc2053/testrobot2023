@@ -62,5 +62,10 @@ namespace str {
       kinematics,
       imu.GetYaw(),
       {flModule.GetPosition(), frModule.GetPosition(), blModule.GetPosition(), brModule.GetPosition()}};
+
+    frc::SwerveModulePosition prevflPos{};
+    frc::SwerveModulePosition prevfrPos{};
+    frc::SwerveModulePosition prevblPos{};
+    frc::SwerveModulePosition prevbrPos{};
   };
 }   // namespace str

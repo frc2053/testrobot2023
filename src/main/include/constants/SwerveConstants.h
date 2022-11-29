@@ -3,6 +3,7 @@
 #include <frc/system/plant/DCMotor.h>
 #include <units/acceleration.h>
 #include <units/length.h>
+#include <units/moment_of_inertia.h>
 #include <units/velocity.h>
 
 namespace str {
@@ -19,7 +20,7 @@ namespace str {
 
   namespace swerve_drive_consts {
     static constexpr double STEER_KF = 0;
-    static constexpr double STEER_KP = 0;
+    static constexpr double STEER_KP = 0.07;
     static constexpr double STEER_KI = 0;
     static constexpr double STEER_KD = 0;
 
@@ -31,10 +32,6 @@ namespace str {
     static constexpr auto DRIVE_KS = 0.46814_V;
     static constexpr auto DRIVE_KV = 2.4253 * 1_V / 1_mps;
     static constexpr auto DRIVE_KA = 0.12445 * 1_V / 1_mps_sq;
-
-    static constexpr auto STEER_KS = 0.46814_V;
-    static constexpr auto STEER_KV = 2.4253 * 1_V / 1_mps;
-    static constexpr auto STEER_KA = 0.12445 * 1_V / 1_mps_sq;
 
     static constexpr units::volt_t MAX_DRIVE_VOLTAGE = 10_V;
 
@@ -48,6 +45,12 @@ namespace str {
     static constexpr units::meter_t DRIVE_WHEEL_DIAMETER = 3_in;
     static constexpr double STEER_GEARBOX_RATIO = (84 / 29) * (76 / 21) * (64 / 14);
     static constexpr double DRIVE_GEARBOX_RATIO = 4.71;
+    static constexpr double STEER_ENCODER_RATIO = 1.0;
+    static constexpr double TREAD_STATIC_COEF_FRIC = 1;
+    static constexpr double TREAD_KINETIC_COEF_FRIC = 1;
+    static constexpr units::kilogram_t ROBOT_MASS = 61.235_kg;
+    static constexpr units::kilogram_square_meter_t ROBOT_MOI = 1_kg_sq_m;
+    static constexpr units::kilogram_square_meter_t MODULE_MOI = 0.01_kg_sq_m;
     static constexpr auto DRIVE_GEARBOX = frc::DCMotor::Falcon500(1);
     static constexpr auto STEER_GEARBOX = frc::DCMotor::NEO550(1);
   }   // namespace swerve_physical_dims

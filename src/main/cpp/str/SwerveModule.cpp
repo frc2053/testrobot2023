@@ -2,28 +2,60 @@
 #include "Constants.h"
 #include "constants/SwerveConstants.h"
 #include "str/Units.h"
+#include <frc/DataLogManager.h>
 #include <frc/RobotBase.h>
+#include <frc/smartdashboard/SmartDashboard.h>
+#include <string>
 
 str::SwerveModule::SwerveModule(int driveCanId, int rotationCanId) :
   driveMotorController(driveCanId), driveMotorSim(driveMotorController),
   steeringMotorController(rotationCanId, rev::CANSparkMaxLowLevel::MotorType::kBrushless) {
+  if(frc::RobotBase::IsSimulation()) {
+    std::string simDeviceName = "SPARK MAX [" + std::to_string(rotationCanId) + "]";
+    frc::DataLogManager::Log("Creating sim handle of name: " + simDeviceName);
+    steerMotorSim = HALSIM_GetSimDeviceHandle(simDeviceName.c_str());
+    steerMotorSimPosition = HALSIM_GetSimValueHandle(steerMotorSim, "Velocity");
+    steerMotorSimVelocity = HALSIM_GetSimValueHandle(steerMotorSim, "Position");
+    steerMotorOutput = HALSIM_GetSimValueHandle(steerMotorSim, "Applied Output");
+  } else {
+    steerMotorSim = -1;
+    steerMotorSimPosition = -1;
+    steerMotorSimVelocity = -1;
+    steerMotorOutput = -1;
+  }
   steeringPIDController = std::make_unique<rev::SparkMaxPIDController>(steeringMotorController.GetPIDController());
   steeringEncoder = std::make_unique<rev::SparkMaxRelativeEncoder>(steeringMotorController.GetEncoder());
   ConfigureSteeringMotor();
   ConfigureDriveMotor();
   ffTimer.Reset();
   ffTimer.Start();
+  steerSimPid.EnableContinuousInput(-180, 180);
 }
 
 void str::SwerveModule::Periodic() {
+  frc::SmartDashboard::PutNumber(
+    "turn pid error" + std::to_string(steeringMotorController.GetDeviceId()),
+    steerSimPid.GetPositionError()
+  );
+
+  frc::SmartDashboard::PutNumber(
+    "turn pid setpoint" + std::to_string(steeringMotorController.GetDeviceId()),
+    steerSimPid.GetSetpoint()
+  );
+
+  frc::SmartDashboard::PutNumber(
+    "turn pid current" + std::to_string(steeringMotorController.GetDeviceId()),
+    GetState().angle.Radians().to<double>()
+  );
 }
 
 void str::SwerveModule::SimulationPeriodic() {
-  driveSim.SetInputVoltage(units::volt_t{driveMotorController.GetMotorOutputVoltage()});
+  auto driveMotorVoltage = units::volt_t{driveMotorController.GetMotorOutputVoltage()};
+  auto steerMotorVoltage = units::volt_t{steerMotorOutput.Get()};
+  driveSim.SetInputVoltage(driveMotorVoltage);
   driveSim.Update(20_ms);
 
-  steerSim.SetInputVoltage(units::volt_t{
-    steeringMotorController.GetAppliedOutput() / steeringMotorController.GetVoltageCompensationNominalVoltage()});
+  steerSim.SetInputVoltage(steerMotorVoltage);
   steerSim.Update(20_ms);
 
   units::meters_per_second_t currentLinearVel = str::Units::ConvertAngularVelocityToLinearVelocity(
@@ -32,6 +64,7 @@ void str::SwerveModule::SimulationPeriodic() {
   );
 
   driveTotalDistance = driveTotalDistance + (currentLinearVel * 20_ms);
+  steerTotalAngle = steerTotalAngle + (steerSim.GetAngularVelocity() * 20_ms);
 
   driveMotorSim.SetIntegratedSensorRawPosition(str::Units::ConvertDistanceToEncoderTicks(
     driveTotalDistance,
@@ -45,6 +78,16 @@ void str::SwerveModule::SimulationPeriodic() {
     str::swerve_physical_dims::DRIVE_GEARBOX_RATIO
   ));
   driveMotorSim.SetBusVoltage(frc::RobotController::GetBatteryVoltage().to<double>());
+
+  auto test = steerSim.GetAngularVelocity().to<double>();
+  auto test2 = steerTotalAngle.to<double>();
+  frc::SmartDashboard::PutNumber("steervel" + std::to_string(steeringMotorController.GetDeviceId()), test);
+  frc::SmartDashboard::PutNumber(
+    "steerpos" + std::to_string(steeringMotorController.GetDeviceId()),
+    str::SwerveModule::MapZeroThreeSixtyToOneEighty(std::fmod(test2, 360))
+  );
+  steerMotorSimVelocity.Set(test);
+  steerMotorSimPosition.Set(test2);
 }
 
 frc::SwerveModuleState str::SwerveModule::GetState() {
@@ -69,7 +112,7 @@ void str::SwerveModule::SetDesiredState(const frc::SwerveModuleState& referenceS
   const frc::SwerveModuleState state =
     frc::SwerveModuleState::Optimize(referenceState, units::radian_t(steeringEncoder->GetPosition()));
 
-  units::volt_t driveFFResult = 12_V;
+  units::volt_t driveFFResult = 0_V;
   units::second_t timeElapsed = ffTimer.Get();
   units::second_t dt = timeElapsed - prevTime;
   if(!openLoop) {
@@ -92,7 +135,15 @@ void str::SwerveModule::SetDesiredState(const frc::SwerveModuleState& referenceS
     (driveFFResult / 12_V).to<double>()
   );
 
-  steeringPIDController->SetReference(state.angle.Radians().to<double>(), rev::ControlType::kPosition);
+  steerMotorOutput.Set(std::clamp(
+    steerSimPid.Calculate(
+      state.angle.Degrees().to<double>(),
+      MapZeroThreeSixtyToOneEighty(std::fmod(steerTotalAngle.convert<units::degrees>().to<double>(), 360))
+    ),
+    -12.0,
+    12.0
+  ));
+  steeringPIDController->SetReference(state.angle.Degrees().to<double>(), rev::CANSparkMax::ControlType::kPosition);
 
   prevModuleSpeed = state.speed;
   prevTime = timeElapsed;
@@ -149,13 +200,15 @@ void str::SwerveModule::ConfigureSteeringMotor() {
 
   steeringMotorController.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
 
+  steeringMotorController.EnableVoltageCompensation(12);
+
   steeringPIDController->SetFeedbackDevice(*steeringEncoder.get());
   steeringPIDController->SetFF(str::swerve_drive_consts::STEER_KF);
   steeringPIDController->SetP(str::swerve_drive_consts::STEER_KP);
   steeringPIDController->SetI(str::swerve_drive_consts::STEER_KI);
   steeringPIDController->SetD(str::swerve_drive_consts::STEER_KD);
 
-  steeringEncoder->SetPositionConversionFactor(2 * std::numbers::pi);
+  steeringEncoder->SetPositionConversionFactor(1);
 
   steeringMotorController.BurnFlash();
 }
@@ -185,4 +238,8 @@ units::meters_per_second_t str::SwerveModule::ConvertDriveEncoderSpeedToVelocity
     ),
     str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
   );
+}
+
+double str::SwerveModule::MapZeroThreeSixtyToOneEighty(double in) {
+  return std::fmod((in + 180), 360) - 180;
 }
