@@ -17,13 +17,13 @@ void SwerveCommandRobot::ConfigureBindings() {
 
   driveSubsystem.SetDefaultCommand(driveSubsystem.DriveFactory(
     [this] {
-      return frc::ApplyDeadband<double>(driverController.GetLeftY(), 0.2);
+      return frc::ApplyDeadband<double>(-driverController.GetLeftY(), 0.2);
     },
     [this] {
-      return frc::ApplyDeadband<double>(driverController.GetLeftX(), 0.2);
+      return frc::ApplyDeadband<double>(-driverController.GetLeftX(), 0.2);
     },
     [this] {
-      return frc::ApplyDeadband<double>(1, 0.2);
+      return frc::ApplyDeadband<double>(-driverController.GetRightX(), 0.2);
     }
   ));
 

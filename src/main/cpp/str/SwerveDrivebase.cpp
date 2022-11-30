@@ -57,40 +57,102 @@ void str::SwerveDrivebase::Periodic() {
     imu.GetYaw(),
     {flModule.GetPosition(), frModule.GetPosition(), blModule.GetPosition(), brModule.GetPosition()}
   );
-  flModule.Periodic();
-  frModule.Periodic();
-  blModule.Periodic();
-  brModule.Periodic();
-  str::Field::GetInstance().SetRobotPosition(odometry.GetPose());
+  if(frc::RobotBase::IsSimulation()) {
+    frc::Pose2d simPose = swerveSim.GetCurrentPose();
+    str::Field::GetInstance().SetRobotPosition(simPose);
+    str::Field::GetInstance().SetObjectPosition(
+      "FL Module Pose",
+      simPose.TransformBy(frc::Transform2d(
+        {str::swerve_physical_dims::WHEELBASE_WIDTH / 2, str::swerve_physical_dims::WHEELBASE_LENGTH / 2},
+        flModule.GetState().angle
+      ))
+    );
+    str::Field::GetInstance().SetObjectPosition(
+      "FR Module Pose",
+      simPose.TransformBy(frc::Transform2d(
+        {-str::swerve_physical_dims::WHEELBASE_WIDTH / 2, str::swerve_physical_dims::WHEELBASE_LENGTH / 2},
+        frModule.GetState().angle
+      ))
+    );
+    str::Field::GetInstance().SetObjectPosition(
+      "BL Module Pose",
+      simPose.TransformBy(frc::Transform2d(
+        {str::swerve_physical_dims::WHEELBASE_WIDTH / 2, -str::swerve_physical_dims::WHEELBASE_LENGTH / 2},
+        blModule.GetState().angle
+      ))
+    );
+    str::Field::GetInstance().SetObjectPosition(
+      "BR Module Pose",
+      simPose.TransformBy(frc::Transform2d(
+        {-str::swerve_physical_dims::WHEELBASE_WIDTH / 2, -str::swerve_physical_dims::WHEELBASE_LENGTH / 2},
+        brModule.GetState().angle
+      ))
+    );
+  } else {
+    str::Field::GetInstance().SetRobotPosition(odometry.GetPose());
+  }
 }
 
 void str::SwerveDrivebase::SimulationPeriodic() {
-  auto flPos = flModule.GetPosition();
-  auto frPos = frModule.GetPosition();
-  auto blPos = blModule.GetPosition();
-  auto brPos = brModule.GetPosition();
-
-  auto flPosDiff = (flPos.distance - prevflPos.distance) / 20_ms;
-  auto frPosDiff = (frPos.distance - prevfrPos.distance) / 20_ms;
-  auto blPosDiff = (blPos.distance - prevblPos.distance) / 20_ms;
-  auto brPosDiff = (brPos.distance - prevbrPos.distance) / 20_ms;
-
-  auto flStateDiff = frc::SwerveModuleState{flPosDiff, flModule.GetState().angle};
-  auto frStateDiff = frc::SwerveModuleState{frPosDiff, frModule.GetState().angle};
-  auto blStateDiff = frc::SwerveModuleState{blPosDiff, blModule.GetState().angle};
-  auto brStateDiff = frc::SwerveModuleState{brPosDiff, brModule.GetState().angle};
-
-  auto chassisSpeedDiff = kinematics.ToChassisSpeeds({flStateDiff, frStateDiff, blStateDiff, brStateDiff});
-
-  imu.SetRate(chassisSpeedDiff.omega);
-
   flModule.SimulationPeriodic();
   frModule.SimulationPeriodic();
   blModule.SimulationPeriodic();
   brModule.SimulationPeriodic();
+
+  std::array<frc::SwerveModuleSim, 4>& simModules = swerveSim.GetModules();
+
+  simModules[0].SetInputVoltages(flModule.GetRotationAppliedVoltage(), flModule.GetDriveAppliedVoltage());
+  simModules[1].SetInputVoltages(frModule.GetRotationAppliedVoltage(), frModule.GetDriveAppliedVoltage());
+  simModules[2].SetInputVoltages(blModule.GetRotationAppliedVoltage(), blModule.GetDriveAppliedVoltage());
+  simModules[3].SetInputVoltages(brModule.GetRotationAppliedVoltage(), brModule.GetDriveAppliedVoltage());
+
+  frc::Pose2d prevRobotPose = swerveSim.GetCurrentPose();
+
+  for(int i = 0; i < 20; i++) {
+    swerveSim.Update(0.001_s);
+  }
+
+  flModule.SetSimState(
+    simModules[0].GetSteerEncoderPosition(),
+    str::Units::ConvertAngularDistanceToLinearDistance(
+      simModules[0].GetDriveEncoderPosition(),
+      str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
+    ),
+    simModules[0].GetDriveEncoderVelocity()
+  );
+
+  frModule.SetSimState(
+    simModules[1].GetSteerEncoderPosition(),
+    str::Units::ConvertAngularDistanceToLinearDistance(
+      simModules[1].GetDriveEncoderPosition(),
+      str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
+    ),
+    simModules[1].GetDriveEncoderVelocity()
+  );
+
+  blModule.SetSimState(
+    simModules[2].GetSteerEncoderPosition(),
+    str::Units::ConvertAngularDistanceToLinearDistance(
+      simModules[2].GetDriveEncoderPosition(),
+      str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
+    ),
+    simModules[2].GetDriveEncoderVelocity()
+  );
+
+  brModule.SetSimState(
+    simModules[3].GetSteerEncoderPosition(),
+    str::Units::ConvertAngularDistanceToLinearDistance(
+      simModules[3].GetDriveEncoderPosition(),
+      str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
+    ),
+    simModules[3].GetDriveEncoderVelocity()
+  );
+
+  imu.SetYaw(swerveSim.GetCurrentPose().Rotation().Radians());
 }
 
 void str::SwerveDrivebase::ResetPose(const frc::Pose2d& newPose) {
+  swerveSim.ModelReset(newPose);
   imu.SetOffset(newPose.Rotation().Radians());
   imu.ZeroYaw();
   flModule.ResetEncoders();

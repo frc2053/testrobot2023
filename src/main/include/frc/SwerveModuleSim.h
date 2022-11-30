@@ -6,6 +6,7 @@
 #include "constants/SwerveConstants.h"
 #include "str/Units.h"
 #include <Eigen/Core>
+#include <frc/ForceAtPose2d.h>
 #include <units/dimensionless.h>
 #include <units/math.h>
 
@@ -111,9 +112,9 @@ namespace frc {
     units::volt_t currentSteerVoltage{};
     units::volt_t currentDriveVoltage{};
     units::meters_per_second_t currentLinearSpeed{};
-    frc::Rotation2d currentSteerAngle{};
-    frc::Pose2d prevModulePose{};
-    frc::Pose2d currentModulePose{};
+    Rotation2d currentSteerAngle{};
+    Pose2d prevModulePose{};
+    Pose2d currentModulePose{};
     units::newton_t crossTreadFricForceMag{};
     units::meters_per_second_t crossTreadVelMag{};
     units::newton_t crossTreadForceMag{};

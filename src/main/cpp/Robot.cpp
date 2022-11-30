@@ -1,17 +1,10 @@
 #include "Robot.h"
 #include <frc/DataLogManager.h>
 #include <frc/DriverStation.h>
-#include <frc/Force2d.h>
-#include <frc/ForceAtPose2d.h>
-#include <frc/QuadSwerveSim.h>
-#include <frc/geometry/Pose2d.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
-#include <str/DiffDrivebase.h>
 
 void Robot::RobotInit() {
-  frc::QuadSwerveSim test{};
-
   frc::DataLogManager::Start();
   frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog());
   robot.ConfigureBindings();

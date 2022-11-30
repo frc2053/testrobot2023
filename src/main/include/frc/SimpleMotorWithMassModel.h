@@ -16,7 +16,7 @@ namespace frc {
     void Update(units::volt_t voltage, units::second_t dt) {
       fwSim.SetInputVoltage(voltage);
       fwSim.Update(dt);
-      displacement = displacement + fwSim.GetAngularVelocity() / 60 * dt;
+      displacement = displacement + fwSim.GetAngularVelocity() * dt;
     };
     units::radians_per_second_t GetMechanismSpeed() {
       return fwSim.GetAngularVelocity();

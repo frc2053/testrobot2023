@@ -60,8 +60,8 @@ namespace frc {
       temp(1, 0) = matrix(1, 0).to<double>();
       auto result = temp * -1.0;
       Eigen::Matrix<units::newton_t, 2, 1> retVal{};
-      retVal(0, 0) = units::newton_t(temp(0, 0));
-      retVal(1, 0) = units::newton_t(temp(1, 0));
+      retVal(0, 0) = units::newton_t(result(0, 0));
+      retVal(1, 0) = units::newton_t(result(1, 0));
       return Force2d(retVal);
     }
     Force2d Times(double scalar) {
@@ -70,8 +70,8 @@ namespace frc {
       temp(1, 0) = matrix(1, 0).to<double>();
       auto result = temp * scalar;
       Eigen::Matrix<units::newton_t, 2, 1> retVal{};
-      retVal(0, 0) = units::newton_t(temp(0, 0));
-      retVal(1, 0) = units::newton_t(temp(1, 0));
+      retVal(0, 0) = units::newton_t(result(0, 0));
+      retVal(1, 0) = units::newton_t(result(1, 0));
       return Force2d(retVal);
     }
     Force2d Div(double scalar) {
@@ -80,8 +80,8 @@ namespace frc {
       temp(1, 0) = matrix(1, 0).to<double>();
       auto result = temp / scalar;
       Eigen::Matrix<units::newton_t, 2, 1> retVal{};
-      retVal(0, 0) = units::newton_t(temp(0, 0));
-      retVal(1, 0) = units::newton_t(temp(1, 0));
+      retVal(0, 0) = units::newton_t(result(0, 0));
+      retVal(1, 0) = units::newton_t(result(1, 0));
       return Force2d(retVal);
     }
     Vector2d<units::newton_t> GetVector() {

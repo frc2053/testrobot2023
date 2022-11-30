@@ -1,13 +1,4 @@
 {
-  "HALProvider": {
-    "Other Devices": {
-      "SPARK MAX [3]": {
-        "header": {
-          "open": true
-        }
-      }
-    }
-  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -33,6 +24,22 @@
         "window": {
           "visible": true
         }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "SmartDashboard": {
+        "IMU": {
+          "open": true
+        },
+        "Reset Drivetrain Pose": {
+          "open": true
+        },
+        "ResetPose": {
+          "open": true
+        },
+        "open": true
       }
     }
   },

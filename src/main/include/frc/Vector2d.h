@@ -32,8 +32,8 @@ namespace frc {
       double cosA = units::math::cos(angle);
       double sinA = units::math::sin(angle);
       T out[2];
-      out[0] = x * cosA - y * sinA;
-      out[1] = x * sinA + y * cosA;
+      out[0] = (x * cosA) - (y * sinA);
+      out[1] = (x * sinA) + (y * cosA);
       x = out[0];
       y = out[1];
     };
@@ -44,18 +44,18 @@ namespace frc {
      * @param vec Vector with which to perform dot product.
      */
     units::meters_per_second_t DotVel(const Vector2d<units::scalar_t>& vec) const {
-      return x * vec.x + y * vec.y;
+      return (x * vec.x) + (y * vec.y);
     }
 
     units::newton_t DotForce(const Vector2d<units::scalar_t>& vec) const {
-      return x * vec.x + y * vec.y;
+      return (x * vec.x) + (y * vec.y);
     }
 
     /**
      * Returns magnitude of vector.
      */
     double Magnitude() const {
-      return std::sqrt(x * x + y * y);
+      return std::sqrt((x * x) + (y * y));
     };
 
     /**
@@ -68,7 +68,7 @@ namespace frc {
     };
 
     units::newton_meter_t Cross(const Vector2d<units::newton_t>& vec) const {
-      return x * vec.y - y * vec.x;
+      return (x * vec.y) - (y * vec.x);
     }
 
     T x{};

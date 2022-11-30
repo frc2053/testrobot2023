@@ -20,7 +20,7 @@ namespace str {
 
   namespace swerve_drive_consts {
     static constexpr double STEER_KF = 0;
-    static constexpr double STEER_KP = 0.07;
+    static constexpr double STEER_KP = 1;
     static constexpr double STEER_KI = 0;
     static constexpr double STEER_KD = 0;
 
@@ -35,7 +35,7 @@ namespace str {
 
     static constexpr units::volt_t MAX_DRIVE_VOLTAGE = 10_V;
 
-    static constexpr units::meters_per_second_t MAX_CHASSIS_SPEED = 13_fps;
+    static constexpr units::meters_per_second_t MAX_CHASSIS_SPEED = 17.5853_fps;
     static constexpr units::radians_per_second_t MAX_CHASSIS_ROT_SPEED = 360_deg_per_s;
   }   // namespace swerve_drive_consts
 
@@ -49,7 +49,7 @@ namespace str {
     static constexpr double TREAD_STATIC_COEF_FRIC = 1;
     static constexpr double TREAD_KINETIC_COEF_FRIC = 1;
     static constexpr units::kilogram_t ROBOT_MASS = 61.235_kg;
-    static constexpr units::kilogram_square_meter_t ROBOT_MOI = 1_kg_sq_m;
+    static constexpr units::kilogram_square_meter_t ROBOT_MOI = 5.808029_kg_sq_m;
     static constexpr units::kilogram_square_meter_t MODULE_MOI = 0.01_kg_sq_m;
     static constexpr auto DRIVE_GEARBOX = frc::DCMotor::Falcon500(1);
     static constexpr auto STEER_GEARBOX = frc::DCMotor::NEO550(1);

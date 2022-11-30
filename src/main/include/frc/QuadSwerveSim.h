@@ -31,6 +31,10 @@ namespace frc {
       return currentPose;
     }
 
+    std::array<SwerveModuleSim, 4>& GetModules() {
+      return simModules;
+    }
+
     void Update(units::second_t dt) {
       Pose2d fieldReferenceFrame{};
       Transform2d fieldToRobotTrans{fieldReferenceFrame, currentPose};

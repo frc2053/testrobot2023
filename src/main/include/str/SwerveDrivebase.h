@@ -4,6 +4,7 @@
 #include "str/IMU.h"
 #include "str/SwerveModule.h"
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
+#include <frc/QuadSwerveSim.h>
 #include <frc/geometry/Pose2d.h>
 #include <frc/geometry/Rotation2d.h>
 #include <frc/geometry/Translation2d.h>
@@ -67,5 +68,7 @@ namespace str {
     frc::SwerveModulePosition prevfrPos{};
     frc::SwerveModulePosition prevblPos{};
     frc::SwerveModulePosition prevbrPos{};
+
+    frc::QuadSwerveSim swerveSim{};
   };
 }   // namespace str
