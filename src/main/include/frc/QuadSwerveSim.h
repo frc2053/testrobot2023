@@ -17,8 +17,8 @@ namespace frc {
     QuadSwerveSim() = default;
 
     void ModelReset(Pose2d pose) {
-      prevAccel = Vector2d<units::meters_per_second_squared_t>();
-      prevVel = Vector2d<units::meters_per_second_t>();
+      prevAccel = Vector2d<units::meters_per_second_squared>();
+      prevVel = Vector2d<units::meters_per_second>();
       prevRotAccel = units::radians_per_second_squared_t{0};
       prevRotVel = 0_rad_per_s;
       for(int i = 0; i < 4; i++) {
@@ -63,9 +63,9 @@ namespace frc {
 
       std::array<ForceAtPose2d, 4> netXTreadFricForces{};
       for(int i = 0; i < 4; i++) {
-        units::newton_t perWheelForceFrac = 1.0_N / 4;
-        Force2d preFricForceAtModule = preFricNetForceRobotCenter.GetForceInRefFrame(simModules[i].GetModulePose())
-                                         .Times(perWheelForceFrac.to<double>());
+        units::scalar_t perWheelForceFrac = 1.0 / 4.0;
+        Force2d preFricForceAtModule =
+          preFricNetForceRobotCenter.GetForceInRefFrame(simModules[i].GetModulePose()).Times(perWheelForceFrac);
         netXTreadFricForces[i] = simModules[i].GetCrossTreadFrictionalForce(preFricForceAtModule, dt);
       }
 
@@ -85,14 +85,14 @@ namespace frc {
         sumOfTorque = sumOfTorque + netXTreadFricForces[i].GetTorque(currentPose);
       }
 
-      Vector2d<units::newton_t> temp =
+      Vector2d<units::newtons> temp =
         robotForceInFieldRefFrame.Times(1 / str::swerve_physical_dims::ROBOT_MASS.to<double>()).GetVector();
 
-      Vector2d<units::meters_per_second_squared_t> accel{
+      Vector2d<units::meters_per_second_squared> accel{
         units::meters_per_second_squared_t{temp.x.to<double>()},
         units::meters_per_second_squared_t{temp.y.to<double>()}};
 
-      Vector2d<units::meters_per_second_t> velocity{
+      Vector2d<units::meters_per_second> velocity{
         prevVel.x + (accel.x + prevAccel.x) / 2 * dt,
         prevVel.y + (accel.y + prevAccel.y) / 2 * dt};
 
@@ -126,8 +126,8 @@ namespace frc {
       Transform2d{modulePositions[1], Rotation2d{0_deg}},
       Transform2d{modulePositions[2], Rotation2d{0_deg}},
       Transform2d{modulePositions[3], Rotation2d{0_deg}}};
-    Vector2d<units::meters_per_second_squared_t> prevAccel{};
-    Vector2d<units::meters_per_second_t> prevVel{};
+    Vector2d<units::meters_per_second_squared> prevAccel{};
+    Vector2d<units::meters_per_second> prevVel{};
     units::radians_per_second_squared_t prevRotAccel{};
     units::radians_per_second_t prevRotVel{};
     Pose2d currentPose{};

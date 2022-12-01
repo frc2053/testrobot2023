@@ -11,8 +11,6 @@
 namespace frc {
   class Force2d {
   public:
-    Eigen::Matrix<units::newton_t, 2, 1> matrix{};
-
     Force2d() = default;
     Force2d(units::newton_t x, units::newton_t y) {
       matrix(0, 0) = x;
@@ -22,7 +20,7 @@ namespace frc {
     Force2d(Eigen::Matrix<units::newton_t, 2, 1> input) {
       matrix = input;
     };
-    Force2d(Vector2d<units::newton_t> vec) : Force2d(vec.x, vec.y){};
+    Force2d(Vector2d<units::newtons> vec) : Force2d(vec.x, vec.y){};
     units::newton_t X() {
       return matrix(0, 0);
     }
@@ -35,8 +33,8 @@ namespace frc {
       temp(1, 0) = matrix(1, 0).to<double>();
       return units::newton_t(temp.norm());
     }
-    Vector2d<units::scalar_t> UnitVector() {
-      Vector2d<units::scalar_t> retVal(this->X() / this->Norm(), this->Y() / this->Norm());
+    Vector2d<units::dimensionless::scalar> UnitVector() {
+      Vector2d<units::dimensionless::scalar> retVal(this->X() / this->Norm(), this->Y() / this->Norm());
       return retVal;
     };
     Force2d RotateBy(frc::Rotation2d angle) {
@@ -64,7 +62,7 @@ namespace frc {
       retVal(1, 0) = units::newton_t(result(1, 0));
       return Force2d(retVal);
     }
-    Force2d Times(double scalar) {
+    Force2d Times(units::scalar_t scalar) {
       Eigen::Matrix<double, 2, 1> temp{};
       temp(0, 0) = matrix(0, 0).to<double>();
       temp(1, 0) = matrix(1, 0).to<double>();
@@ -74,7 +72,7 @@ namespace frc {
       retVal(1, 0) = units::newton_t(result(1, 0));
       return Force2d(retVal);
     }
-    Force2d Div(double scalar) {
+    Force2d Div(units::scalar_t scalar) {
       Eigen::Matrix<double, 2, 1> temp{};
       temp(0, 0) = matrix(0, 0).to<double>();
       temp(1, 0) = matrix(1, 0).to<double>();
@@ -84,12 +82,13 @@ namespace frc {
       retVal(1, 0) = units::newton_t(result(1, 0));
       return Force2d(retVal);
     }
-    Vector2d<units::newton_t> GetVector() {
+    Vector2d<units::newtons> GetVector() {
       Vector2d retVal(this->X(), this->Y());
       return retVal;
     };
 
   private:
+    Eigen::Matrix<units::newton_t, 2, 1> matrix{};
   };
 
 }   // namespace frc

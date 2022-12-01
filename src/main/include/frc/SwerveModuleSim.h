@@ -23,7 +23,7 @@ namespace frc {
         str::swerve_physical_dims::DRIVE_GEARBOX,
         str::swerve_physical_dims::DRIVE_GEARBOX_RATIO,
         str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2,
-        0.01
+        units::unit_t<frictionCoefUnit>(0.01)
       ){};
 
     void SetInputVoltages(units::volt_t steerVoltage, units::volt_t driveVoltage) {
@@ -51,27 +51,27 @@ namespace frc {
     };
 
     void Update(units::second_t dt) {
-      Vector2d<units::scalar_t> steerUnitVec(1, 0);
+      Vector2d<units::scalar> steerUnitVec(1, 0);
       steerUnitVec.Rotate(currentSteerAngle.Radians());
-      units::meters_per_second_t velocityAlongSteer = GetModuleRelativeTranslationVelocity(dt).DotVel(steerUnitVec);
+      units::meters_per_second_t velocityAlongSteer = GetModuleRelativeTranslationVelocity(dt).Dot(steerUnitVec);
       driveMotor.Update(velocityAlongSteer, currentDriveVoltage, dt);
       steerMotor.Update(currentSteerVoltage, dt);
       currentSteerAngle = Rotation2d(steerMotor.GetPosition());
     };
 
-    Vector2d<units::meters_per_second_t> GetModuleRelativeTranslationVelocity(units::second_t dt) {
+    Vector2d<units::meters_per_second> GetModuleRelativeTranslationVelocity(units::second_t dt) {
       units::meters_per_second_t xVel = (currentModulePose.Translation().X() - prevModulePose.Translation().X()) / dt;
       units::meters_per_second_t yVel = (currentModulePose.Translation().Y() - prevModulePose.Translation().Y()) / dt;
-      Vector2d<units::meters_per_second_t> moduleTranslationVec(xVel, yVel);
+      Vector2d<units::meters_per_second> moduleTranslationVec(xVel, yVel);
       moduleTranslationVec.Rotate(-1.0 * currentModulePose.Rotation().Radians());
       return moduleTranslationVec;
     };
 
     ForceAtPose2d GetCrossTreadFrictionalForce(Force2d netForce, units::second_t dt) {
-      Vector2d<units::scalar_t> crossTreadUnitVector(0, 1);
+      Vector2d<units::scalar> crossTreadUnitVector(0, 1);
       crossTreadUnitVector.Rotate(currentSteerAngle.Radians());
-      crossTreadVelMag = GetModuleRelativeTranslationVelocity(dt).DotVel(crossTreadUnitVector);
-      crossTreadForceMag = netForce.GetVector().DotForce(crossTreadUnitVector);
+      crossTreadVelMag = GetModuleRelativeTranslationVelocity(dt).Dot(crossTreadUnitVector);
+      crossTreadForceMag = netForce.GetVector().Dot(crossTreadUnitVector);
       Force2d fricForce{};
       if(units::math::fabs(crossTreadForceMag) > treadStaticFricForce || units::math::fabs(crossTreadVelMag) > 0.001_mps) {
         crossTreadFricForceMag =

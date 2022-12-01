@@ -18,8 +18,8 @@ namespace frc {
     units::newton_meter_t GetTorque(Pose2d centerOfRotation) {
       Transform2d transCORtoF{centerOfRotation, pose};
       Force2d alignedForce = GetForceInRefFrame(centerOfRotation);
-      Vector2d<units::meter_t> leverArm(transCORtoF.X(), transCORtoF.Y());
-      return leverArm.Cross(alignedForce.GetVector());
+      Vector2d<units::meter> leverArm(transCORtoF.X(), transCORtoF.Y());
+      return leverArm.Cross<units::newtons>(alignedForce.GetVector());
     };
     Force2d GetForceInRefFrame(Pose2d refFrame) {
       Transform2d trans{refFrame, pose};

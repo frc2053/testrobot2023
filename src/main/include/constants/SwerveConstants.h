@@ -2,6 +2,7 @@
 
 #include <frc/system/plant/DCMotor.h>
 #include <units/acceleration.h>
+#include <units/dimensionless.h>
 #include <units/length.h>
 #include <units/moment_of_inertia.h>
 #include <units/velocity.h>
@@ -43,11 +44,11 @@ namespace str {
     static constexpr units::meter_t WHEELBASE_WIDTH = 27_in;
     static constexpr units::meter_t WHEELBASE_LENGTH = 27_in;
     static constexpr units::meter_t DRIVE_WHEEL_DIAMETER = 3_in;
-    static constexpr double STEER_GEARBOX_RATIO = (84 / 29) * (76 / 21) * (64 / 14);
-    static constexpr double DRIVE_GEARBOX_RATIO = 4.71;
-    static constexpr double STEER_ENCODER_RATIO = 1.0;
-    static constexpr double TREAD_STATIC_COEF_FRIC = 1;
-    static constexpr double TREAD_KINETIC_COEF_FRIC = 1;
+    static constexpr units::scalar_t STEER_GEARBOX_RATIO = (84 / 29) * (76 / 21) * (64 / 14);
+    static constexpr units::scalar_t DRIVE_GEARBOX_RATIO = 4.71;
+    static constexpr units::scalar_t STEER_ENCODER_RATIO = 1.0;
+    static constexpr units::scalar_t TREAD_STATIC_COEF_FRIC = 1;
+    static constexpr units::scalar_t TREAD_KINETIC_COEF_FRIC = 1;
     static constexpr units::kilogram_t ROBOT_MASS = 61.235_kg;
     static constexpr units::kilogram_square_meter_t ROBOT_MOI = 5.808029_kg_sq_m;
     static constexpr units::kilogram_square_meter_t MODULE_MOI = 0.01_kg_sq_m;
