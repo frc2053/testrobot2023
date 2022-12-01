@@ -3,9 +3,7 @@
 #include "MotorGearboxWheelSim.h"
 #include "SimpleMotorWithMassModel.h"
 #include "Vector2d.h"
-#include "constants/SwerveConstants.h"
 #include "str/Units.h"
-#include <Eigen/Core>
 #include <frc/ForceAtPose2d.h>
 #include <units/dimensionless.h>
 #include <units/math.h>
@@ -13,18 +11,23 @@
 namespace frc {
   class SwerveModuleSim {
   public:
-    SwerveModuleSim() :
-      steerMotor(
-        str::swerve_physical_dims::STEER_GEARBOX,
-        str::swerve_physical_dims::STEER_GEARBOX_RATIO,
-        str::swerve_physical_dims::MODULE_MOI
-      ),
-      driveMotor(
-        str::swerve_physical_dims::DRIVE_GEARBOX,
-        str::swerve_physical_dims::DRIVE_GEARBOX_RATIO,
-        str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2,
-        units::unit_t<frictionCoefUnit>(0.01)
-      ){};
+    SwerveModuleSim(
+      frc::DCMotor steerGearbox,
+      units::scalar_t steerGearboxRatio,
+      units::scalar_t steeringEncoderRatio,
+      units::kilogram_square_meter_t moduleMOI,
+      frc::DCMotor driveGearbox,
+      units::scalar_t driveGearboxRatio,
+      units::meter_t wheelRadius,
+      units::unit_t<frictionCoefUnit> frictionCoef,
+      units::kilogram_t massOverWheel,
+      units::scalar_t staticCoefFriction,
+      units::scalar_t kineticCoefFric
+    ) :
+      encoderToSteerRatio(steeringEncoderRatio),
+      driveMotorToOutputGearboxRatio(driveGearboxRatio), steerMotor(steerGearbox, steerGearboxRatio, moduleMOI),
+      driveMotor(driveGearbox, driveGearboxRatio, wheelRadius, frictionCoef), normalForce(massOverWheel * 9.81_mps_sq),
+      treadStaticFricForce(staticCoefFriction * normalForce), treadKineticFricForce(kineticCoefFric * normalForce){};
 
     void SetInputVoltages(units::volt_t steerVoltage, units::volt_t driveVoltage) {
       currentSteerVoltage = steerVoltage;
@@ -32,15 +35,15 @@ namespace frc {
     };
 
     units::turn_t GetSteerEncoderPosition() {
-      return steerMotor.GetPosition() * str::swerve_physical_dims::STEER_ENCODER_RATIO;
+      return steerMotor.GetPosition() * encoderToSteerRatio;
     };
 
     units::turn_t GetDriveEncoderPosition() {
-      return driveMotor.GetPosition() * str::swerve_physical_dims::DRIVE_GEARBOX_RATIO;
+      return driveMotor.GetPosition() * driveMotorToOutputGearboxRatio;
     };
 
     units::radians_per_second_t GetDriveEncoderVelocity() {
-      return driveMotor.GetVelocity() * str::swerve_physical_dims::DRIVE_GEARBOX_RATIO;
+      return driveMotor.GetVelocity() * driveMotorToOutputGearboxRatio;
     };
 
     void Reset(frc::Pose2d initPose) {
@@ -107,20 +110,30 @@ namespace frc {
     }
 
   private:
+    units::scalar_t encoderToSteerRatio;
+    units::scalar_t driveMotorToOutputGearboxRatio;
+
     SimpleMotorWithMassModel steerMotor;
     MotorGearboxWheelSim driveMotor;
+
     units::volt_t currentSteerVoltage{};
     units::volt_t currentDriveVoltage{};
+
     units::meters_per_second_t currentLinearSpeed{};
     Rotation2d currentSteerAngle{};
+
     Pose2d prevModulePose{};
     Pose2d currentModulePose{};
+
     units::newton_t crossTreadFricForceMag{};
     units::meters_per_second_t crossTreadVelMag{};
     units::newton_t crossTreadForceMag{};
-    units::newton_t normalForce{(str::swerve_physical_dims::ROBOT_MASS * 9.81_mps_sq) / 4};
-    units::newton_t treadStaticFricForce{str::swerve_physical_dims::TREAD_STATIC_COEF_FRIC * normalForce};
-    units::newton_t treadKineticFricForce{str::swerve_physical_dims::TREAD_KINETIC_COEF_FRIC * normalForce};
+
+    units::newton_t normalForce;
+
+    units::newton_t treadStaticFricForce;
+    units::newton_t treadKineticFricForce;
+
     bool first{true};
   };
 }   // namespace frc

@@ -14,7 +14,82 @@
 namespace frc {
   class QuadSwerveSim {
   public:
-    QuadSwerveSim() = default;
+    QuadSwerveSim(
+      std::array<Translation2d, 4> modulePos,
+      frc::DCMotor steerGearbox,
+      units::scalar_t steerGearboxRatio,
+      units::scalar_t steeringEncoderRatio,
+      units::kilogram_square_meter_t moduleMOI,
+      frc::DCMotor driveGearbox,
+      units::scalar_t driveGearboxRatio,
+      units::meter_t wheelRadius,
+      units::unit_t<frictionCoefUnit> frictionCoef,
+      units::kilogram_t robotTotalMass,
+      units::kilogram_square_meter_t robotMOI,
+      units::scalar_t staticCoefFriction,
+      units::scalar_t kineticCoefFric
+    ) :
+      robotMass(robotTotalMass),
+      robotMomentOfInertia(robotMOI), modulePositions(modulePos), moduleTransforms(
+                                                                    Transform2d(modulePositions[0], Rotation2d(0_deg)),
+                                                                    Transform2d(modulePositions[1], Rotation2d(0_deg)),
+                                                                    Transform2d(modulePositions[2], Rotation2d(0_deg)),
+                                                                    Transform2d(modulePositions[3], Rotation2d(0_deg))
+                                                                  ),
+      simModules(
+        SwerveModuleSim(
+          steerGearbox,
+          steerGearboxRatio,
+          steeringEncoderRatio,
+          moduleMOI,
+          driveGearbox,
+          driveGearboxRatio,
+          wheelRadius,
+          frictionCoef,
+          robotMass / 4,
+          staticCoefFriction,
+          kineticCoefFric
+        ),
+        SwerveModuleSim(
+          steerGearbox,
+          steerGearboxRatio,
+          steeringEncoderRatio,
+          moduleMOI,
+          driveGearbox,
+          driveGearboxRatio,
+          wheelRadius,
+          frictionCoef,
+          robotMass / 4,
+          staticCoefFriction,
+          kineticCoefFric
+        ),
+        SwerveModuleSim(
+          steerGearbox,
+          steerGearboxRatio,
+          steeringEncoderRatio,
+          moduleMOI,
+          driveGearbox,
+          driveGearboxRatio,
+          wheelRadius,
+          frictionCoef,
+          robotMass / 4,
+          staticCoefFriction,
+          kineticCoefFric
+        ),
+        SwerveModuleSim(
+          steerGearbox,
+          steerGearboxRatio,
+          steeringEncoderRatio,
+          moduleMOI,
+          driveGearbox,
+          driveGearboxRatio,
+          wheelRadius,
+          frictionCoef,
+          robotMass / 4,
+          staticCoefFriction,
+          kineticCoefFric
+        )
+      ){};
 
     void ModelReset(Pose2d pose) {
       prevAccel = Vector2d<units::meters_per_second_squared>();
@@ -85,8 +160,7 @@ namespace frc {
         sumOfTorque = sumOfTorque + netXTreadFricForces[i].GetTorque(currentPose);
       }
 
-      Vector2d<units::newtons> temp =
-        robotForceInFieldRefFrame.Times(1 / str::swerve_physical_dims::ROBOT_MASS.to<double>()).GetVector();
+      Vector2d<units::newtons> temp = robotForceInFieldRefFrame.Times(1 / robotMass.to<double>()).GetVector();
 
       Vector2d<units::meters_per_second_squared> accel{
         units::meters_per_second_squared_t{temp.x.to<double>()},
@@ -101,8 +175,7 @@ namespace frc {
       prevVel = velocity;
       prevAccel = accel;
 
-      units::radians_per_second_squared_t rotAccel{
-        sumOfTorque.to<double>() / str::swerve_physical_dims::ROBOT_MOI.to<double>()};
+      units::radians_per_second_squared_t rotAccel{sumOfTorque.to<double>() / robotMomentOfInertia.to<double>()};
       units::radians_per_second_t rotVel{prevRotVel + (rotAccel + prevRotAccel) / 2 * dt};
       units::radian_t rotPosChange{(rotVel + prevRotVel) / 2 * dt};
 
@@ -115,17 +188,11 @@ namespace frc {
     }
 
   private:
-    std::array<SwerveModuleSim, 4> simModules{};
-    std::array<Translation2d, 4> modulePositions{
-      Translation2d{str::swerve_physical_dims::WHEELBASE_WIDTH / 2, str::swerve_physical_dims::WHEELBASE_LENGTH / 2},
-      Translation2d{str::swerve_physical_dims::WHEELBASE_WIDTH / 2, -str::swerve_physical_dims::WHEELBASE_LENGTH / 2},
-      Translation2d{-str::swerve_physical_dims::WHEELBASE_WIDTH / 2, str::swerve_physical_dims::WHEELBASE_LENGTH / 2},
-      Translation2d{-str::swerve_physical_dims::WHEELBASE_WIDTH / 2, -str::swerve_physical_dims::WHEELBASE_LENGTH / 2}};
-    std::array<Transform2d, 4> moduleTransforms{
-      Transform2d{modulePositions[0], Rotation2d{0_deg}},
-      Transform2d{modulePositions[1], Rotation2d{0_deg}},
-      Transform2d{modulePositions[2], Rotation2d{0_deg}},
-      Transform2d{modulePositions[3], Rotation2d{0_deg}}};
+    units::kilogram_t robotMass;
+    units::kilogram_square_meter_t robotMomentOfInertia;
+    std::array<SwerveModuleSim, 4> simModules;
+    std::array<Translation2d, 4> modulePositions;
+    std::array<Transform2d, 4> moduleTransforms;
     Vector2d<units::meters_per_second_squared> prevAccel{};
     Vector2d<units::meters_per_second> prevVel{};
     units::radians_per_second_squared_t prevRotAccel{};
