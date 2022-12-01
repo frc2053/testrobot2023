@@ -26,7 +26,8 @@ namespace str {
       units::meters_per_second_t ySpeed,
       units::radians_per_second_t rotSpeed,
       bool fieldRelative,
-      bool openLoopDrive
+      bool openLoopDrive,
+      bool voltageComp
     );
 
   private:

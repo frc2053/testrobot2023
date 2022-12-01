@@ -37,7 +37,8 @@ namespace str {
     static constexpr units::volt_t MAX_DRIVE_VOLTAGE = 10_V;
 
     static constexpr units::meters_per_second_t MAX_CHASSIS_SPEED = 17.5853_fps;
-    static constexpr units::radians_per_second_t MAX_CHASSIS_ROT_SPEED = 360_deg_per_s;
+    static constexpr units::meters_per_second_t MAX_CHASSIS_SPEED_10_V = 14.78_fps;
+    static constexpr units::radians_per_second_t MAX_CHASSIS_ROT_SPEED = 1080_deg_per_s;
   }   // namespace swerve_drive_consts
 
   namespace swerve_physical_dims {

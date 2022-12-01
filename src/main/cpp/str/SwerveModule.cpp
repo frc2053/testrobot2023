@@ -65,7 +65,7 @@ frc::SwerveModulePosition str::SwerveModule::GetPosition() {
   return position;
 }
 
-void str::SwerveModule::SetDesiredState(const frc::SwerveModuleState& referenceState, bool openLoop) {
+void str::SwerveModule::SetDesiredState(const frc::SwerveModuleState& referenceState, bool openLoop, bool voltageComp) {
   const frc::SwerveModuleState state =
     frc::SwerveModuleState::Optimize(referenceState, units::radian_t(steerMotor.GetPosition()));
 
@@ -73,25 +73,35 @@ void str::SwerveModule::SetDesiredState(const frc::SwerveModuleState& referenceS
   units::second_t timeElapsed = ffTimer.Get();
   units::second_t dt = timeElapsed - prevTime;
 
-  if(!openLoop) {
-    driveFFResult = driveFF.Calculate(state.speed, (state.speed - prevModuleSpeed) / dt);
+  units::meters_per_second_t maxSpeed{};
+
+  if(voltageComp) {
+    driveMotorController.EnableVoltageCompensation(true);
+    maxSpeed = str::swerve_drive_consts::MAX_CHASSIS_SPEED_10_V;
+  } else {
+    driveMotorController.EnableVoltageCompensation(false);
+    maxSpeed = str::swerve_drive_consts::MAX_CHASSIS_SPEED;
   }
 
-  int falconSetpoint = str::Units::ConvertAngularVelocityToTicksPer100Ms(
-    str::Units::ConvertLinearVelocityToAngularVelocity(
-      state.speed,
-      str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
-    ),
-    str::encoder_cprs::FALCON_CPR,
-    str::swerve_physical_dims::DRIVE_GEARBOX_RATIO
-  );
-
-  driveMotorController.Set(
-    ctre::phoenix::motorcontrol::ControlMode::Velocity,
-    falconSetpoint,
-    ctre::phoenix::motorcontrol::DemandType::DemandType_ArbitraryFeedForward,
-    (driveFFResult / 12_V).to<double>()
-  );
+  if(openLoop) {
+    driveMotorController.Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput, state.speed / maxSpeed);
+  } else {
+    driveFFResult = driveFF.Calculate(state.speed, (state.speed - prevModuleSpeed) / dt);
+    int falconSetpoint = str::Units::ConvertAngularVelocityToTicksPer100Ms(
+      str::Units::ConvertLinearVelocityToAngularVelocity(
+        state.speed,
+        str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
+      ),
+      str::encoder_cprs::FALCON_CPR,
+      str::swerve_physical_dims::DRIVE_GEARBOX_RATIO
+    );
+    driveMotorController.Set(
+      ctre::phoenix::motorcontrol::ControlMode::Velocity,
+      falconSetpoint,
+      ctre::phoenix::motorcontrol::DemandType::DemandType_ArbitraryFeedForward,
+      (driveFFResult / driveMotorController.GetBusVoltage()).to<double>()
+    );
+  }
 
   steerMotor.SetReference(state.angle.Radians().to<double>());
 
@@ -137,7 +147,7 @@ void str::SwerveModule::ConfigureDriveMotor() {
   driveMotorController.ConfigAllSettings(baseConfig);
 
   // Enable voltage compensation to combat consistency from battery sag
-  driveMotorController.EnableVoltageCompensation(false);
+  driveMotorController.EnableVoltageCompensation(true);
 
   driveMotorController.SetInverted(ctre::phoenix::motorcontrol::InvertType::None);
 

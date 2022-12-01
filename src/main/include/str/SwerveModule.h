@@ -15,7 +15,7 @@ namespace str {
     SwerveModule(int driveCanId, int rotationCanId);
     frc::SwerveModuleState GetState();
     frc::SwerveModulePosition GetPosition();
-    void SetDesiredState(const frc::SwerveModuleState& referenceState, bool openLoop);
+    void SetDesiredState(const frc::SwerveModuleState& referenceState, bool openLoop, bool voltageComp);
     void ResetEncoders();
     units::volt_t GetDriveAppliedVoltage();
     units::volt_t GetRotationAppliedVoltage();
