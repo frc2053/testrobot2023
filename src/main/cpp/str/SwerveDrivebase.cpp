@@ -47,6 +47,19 @@ void str::SwerveDrivebase::Drive(
 
   auto [fl, fr, bl, br] = states;
 
+  desiredModuleDataForNT = {
+    fl.angle.Radians().to<double>(),
+    fl.speed.convert<units::feet_per_second>().to<double>(),
+    fr.angle.Radians().to<double>(),
+    fr.speed.convert<units::feet_per_second>().to<double>(),
+    bl.angle.Radians().to<double>(),
+    bl.speed.convert<units::feet_per_second>().to<double>(),
+    br.angle.Radians().to<double>(),
+    br.speed.convert<units::feet_per_second>().to<double>(),
+  };
+
+  frc::SmartDashboard::PutNumberArray("Desired Swerve Module Data", desiredModuleDataForNT);
+
   flModule.SetDesiredState(fl, openLoopDrive, voltageComp);
   frModule.SetDesiredState(fr, openLoopDrive, voltageComp);
   blModule.SetDesiredState(bl, openLoopDrive, voltageComp);
@@ -81,6 +94,22 @@ void str::SwerveDrivebase::Periodic() {
     "BR Module Pose",
     pose.TransformBy(frc::Transform2d(brLocation, brModule.GetState().angle))
   );
+
+  currentModuleDataForNT = {
+    flModule.GetState().angle.Radians().to<double>(),
+    flModule.GetState().speed.convert<units::feet_per_second>().to<double>(),
+    frModule.GetState().angle.Radians().to<double>(),
+    frModule.GetState().speed.convert<units::feet_per_second>().to<double>(),
+    blModule.GetState().angle.Radians().to<double>(),
+    blModule.GetState().speed.convert<units::feet_per_second>().to<double>(),
+    brModule.GetState().angle.Radians().to<double>(),
+    brModule.GetState().speed.convert<units::feet_per_second>().to<double>(),
+  };
+
+  currentPoseForNT = {pose.X().to<double>(), pose.Y().to<double>(), pose.Rotation().Radians().to<double>()};
+
+  frc::SmartDashboard::PutNumberArray("Robot Pose", currentPoseForNT);
+  frc::SmartDashboard::PutNumberArray("Current Swerve Module Data", currentModuleDataForNT);
 }
 
 void str::SwerveDrivebase::SimulationPeriodic() {

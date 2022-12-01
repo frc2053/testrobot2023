@@ -65,7 +65,7 @@ void str::IMU::InitSendable(wpi::SendableBuilder& builder) {
   builder.AddDoubleProperty(
     "imu_yaw_rads",
     [this] {
-      return GetYaw().Degrees().to<double>();
+      return GetYaw().Radians().to<double>();
     },
     nullptr
   );

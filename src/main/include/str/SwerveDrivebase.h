@@ -84,5 +84,9 @@ namespace str {
       str::swerve_physical_dims::ROBOT_MOI,
       str::swerve_physical_dims::TREAD_STATIC_COEF_FRIC,
       str::swerve_physical_dims::TREAD_KINETIC_COEF_FRIC};
+
+    std::array<double, 8> currentModuleDataForNT{};
+    std::array<double, 8> desiredModuleDataForNT{};
+    std::array<double, 3> currentPoseForNT{};
   };
 }   // namespace str
