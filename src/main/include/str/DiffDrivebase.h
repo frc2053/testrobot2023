@@ -41,15 +41,16 @@ namespace str {
 
     frc::DifferentialDrive drive{frontLeftController, frontRightController};
 
+    frc::DifferentialDriveKinematics driveKinematics{str::diff_physical_dims::WHEELBASE_WIDTH};
     frc::DifferentialDriveOdometry driveOdometry{imu.GetYaw(), 0_m, 0_m};
     frc::DifferentialDrivePoseEstimator driveEstimator{
+      driveKinematics,
       frc::Rotation2d{0_deg},
       0_m,
       0_m,
       frc::Pose2d{},
-      {0.01, 0.01, 0.01, 0.01, 0.01},
-      {0.1, 0.1, 0.1},
-      {0.1, 0.1, 0.1}};
+      {0.0, 0.0, 0.0},
+      {0.0, 0.0, 0.0}};
 
     frc::sim::DifferentialDrivetrainSim drivetrainSimulator{
       str::diff_drive_consts::DRIVE_TRAIN_PLANT,

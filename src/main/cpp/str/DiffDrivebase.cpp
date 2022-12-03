@@ -33,7 +33,7 @@ void str::DiffDrivebase::Periodic() {
 
   driveOdometry.Update(currentYaw, currentLeftDist, currentRightDist);
 
-  driveEstimator.Update(currentYaw, GetWheelSpeeds(), currentLeftDist, currentRightDist);
+  driveEstimator.Update(currentYaw, currentLeftDist, currentRightDist);
 
   str::Field::GetInstance().SetRobotPosition(driveOdometry.GetPose());
   str::Field::GetInstance().SetObjectPosition("PoseEstimator", driveEstimator.GetEstimatedPosition());

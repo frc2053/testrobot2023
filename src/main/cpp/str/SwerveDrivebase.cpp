@@ -125,8 +125,6 @@ void str::SwerveDrivebase::SimulationPeriodic() {
   simModules[2].SetInputVoltages(blModule.GetRotationAppliedVoltage(), blModule.GetDriveAppliedVoltage());
   simModules[3].SetInputVoltages(brModule.GetRotationAppliedVoltage(), brModule.GetDriveAppliedVoltage());
 
-  frc::Pose2d prevRobotPose = swerveSim.GetCurrentPose();
-
   for(int i = 0; i < 20; i++) {
     swerveSim.Update(0.001_s);
   }

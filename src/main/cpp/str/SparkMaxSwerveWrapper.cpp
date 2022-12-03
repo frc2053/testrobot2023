@@ -40,7 +40,7 @@ str::SparkMaxSwerveWrapper::SparkMaxSwerveWrapper(int canId) :
 }
 
 void str::SparkMaxSwerveWrapper::SetReference(double ref) {
-  pidController->SetReference(ref, rev::ControlType::kPosition);
+  pidController->SetReference(ref, rev::CANSparkMax::ControlType::kPosition);
   fakePid.SetSetpoint(ref);
 }
 

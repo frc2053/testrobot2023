@@ -31,7 +31,6 @@ namespace str {
 
     static constexpr units::volt_t MAX_DRIVE_VOLTAGE = 10_V;
 
-    extern const frc::DifferentialDriveKinematics DRIVE_KINEMATICS;
     extern const frc::LinearSystem<2, 2, 2> DRIVE_TRAIN_PLANT;
   }   // namespace diff_drive_consts
 

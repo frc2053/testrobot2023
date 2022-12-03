@@ -29,15 +29,15 @@ namespace frc {
       units::scalar_t staticCoefFriction,
       units::scalar_t kineticCoefFric
     ) :
-      robotMass(robotTotalMass),
-      robotMomentOfInertia(robotMOI), modulePositions(modulePos), moduleTransforms(
-                                                                    Transform2d(modulePositions[0], Rotation2d(0_deg)),
-                                                                    Transform2d(modulePositions[1], Rotation2d(0_deg)),
-                                                                    Transform2d(modulePositions[2], Rotation2d(0_deg)),
-                                                                    Transform2d(modulePositions[3], Rotation2d(0_deg))
-                                                                  ),
-      simModules(
-        SwerveModuleSim(
+      robotMass{robotTotalMass},
+      robotMomentOfInertia{robotMOI}, modulePositions{modulePos},
+      moduleTransforms{
+        Transform2d{modulePositions[0], Rotation2d{0_deg}},
+        Transform2d{modulePositions[1], Rotation2d{0_deg}},
+        Transform2d{modulePositions[2], Rotation2d{0_deg}},
+        Transform2d{modulePositions[3], Rotation2d{0_deg}}},
+      simModules{
+        SwerveModuleSim{
           steerGearbox,
           steerGearboxRatio,
           steeringEncoderRatio,
@@ -48,9 +48,8 @@ namespace frc {
           frictionCoef,
           robotMass / 4,
           staticCoefFriction,
-          kineticCoefFric
-        ),
-        SwerveModuleSim(
+          kineticCoefFric},
+        SwerveModuleSim{
           steerGearbox,
           steerGearboxRatio,
           steeringEncoderRatio,
@@ -61,9 +60,8 @@ namespace frc {
           frictionCoef,
           robotMass / 4,
           staticCoefFriction,
-          kineticCoefFric
-        ),
-        SwerveModuleSim(
+          kineticCoefFric},
+        SwerveModuleSim{
           steerGearbox,
           steerGearboxRatio,
           steeringEncoderRatio,
@@ -74,9 +72,8 @@ namespace frc {
           frictionCoef,
           robotMass / 4,
           staticCoefFriction,
-          kineticCoefFric
-        ),
-        SwerveModuleSim(
+          kineticCoefFric},
+        SwerveModuleSim{
           steerGearbox,
           steerGearboxRatio,
           steeringEncoderRatio,
@@ -87,9 +84,7 @@ namespace frc {
           frictionCoef,
           robotMass / 4,
           staticCoefFriction,
-          kineticCoefFric
-        )
-      ){};
+          kineticCoefFric}} {};
 
     void ModelReset(Pose2d pose) {
       prevAccel = Vector2d<units::meters_per_second_squared>();
@@ -130,7 +125,7 @@ namespace frc {
         preFricNetForce.Accum(wheelMotiveForces[i].GetForceInRefFrame(currentPose));
       }
 
-      Force2d sidekickForce{};
+      Force2d sidekickForce{0_N, 0_N};
 
       preFricNetForce.Accum(sidekickForce);
 
@@ -190,9 +185,9 @@ namespace frc {
   private:
     units::kilogram_t robotMass;
     units::kilogram_square_meter_t robotMomentOfInertia;
-    std::array<SwerveModuleSim, 4> simModules;
     std::array<Translation2d, 4> modulePositions;
     std::array<Transform2d, 4> moduleTransforms;
+    std::array<SwerveModuleSim, 4> simModules;
     Vector2d<units::meters_per_second_squared> prevAccel{};
     Vector2d<units::meters_per_second> prevVel{};
     units::radians_per_second_squared_t prevRotAccel{};
