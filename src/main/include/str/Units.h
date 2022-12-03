@@ -22,7 +22,7 @@ namespace str {
       units::radian_t turns,
       units::meter_t wheelRadius
     ) {
-      return units::meter_t{turns.to<double>() / (2 * std::numbers::pi * wheelRadius.to<double>())};
+      return units::meter_t{turns.to<double>() * wheelRadius.to<double>()};
     }
     static constexpr units::radians_per_second_t ConvertTicksPer100MsToAngularVelocity(
       double ticksPer100Ms,

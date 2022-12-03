@@ -5,6 +5,7 @@
 #include "str/SwerveModule.h"
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/QuadSwerveSim.h>
+#include <frc/estimator/SwerveDrivePoseEstimator.h>
 #include <frc/geometry/Pose2d.h>
 #include <frc/geometry/Rotation2d.h>
 #include <frc/geometry/Translation2d.h>
@@ -64,6 +65,13 @@ namespace str {
       kinematics,
       imu.GetYaw(),
       {flModule.GetPosition(), frModule.GetPosition(), blModule.GetPosition(), brModule.GetPosition()}};
+    frc::SwerveDrivePoseEstimator<4> estimator{
+      kinematics,
+      imu.GetYaw(),
+      {flModule.GetPosition(), frModule.GetPosition(), blModule.GetPosition(), brModule.GetPosition()},
+      frc::Pose2d{},
+      {0.1, 0.1, 0.1},
+      {0.9, 0.9, 0.9}};
 
     frc::SwerveModulePosition prevflPos{};
     frc::SwerveModulePosition prevfrPos{};
@@ -87,6 +95,7 @@ namespace str {
 
     std::array<double, 8> currentModuleDataForNT{};
     std::array<double, 8> desiredModuleDataForNT{};
-    std::array<double, 3> currentPoseForNT{};
+    std::array<double, 3> currentOdomPoseForNT{};
+    std::array<double, 3> currentEstimatorPoseForNT{};
   };
 }   // namespace str

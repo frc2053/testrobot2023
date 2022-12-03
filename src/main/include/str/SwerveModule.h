@@ -28,7 +28,6 @@ namespace str {
     void ConfigureSteeringMotor();
     units::meter_t ConvertDriveEncoderTicksToDistance(int ticks);
     units::meters_per_second_t ConvertDriveEncoderSpeedToVelocity(int ticksPer100Ms);
-    double MapZeroThreeSixtyToOneEighty(double in);
 
     ctre::phoenix::motorcontrol::can::WPI_TalonFX driveMotorController;
     ctre::phoenix::motorcontrol::TalonFXSimCollection driveMotorSim;

@@ -47,16 +47,14 @@ void str::SwerveDrivebase::Drive(
 
   auto [fl, fr, bl, br] = states;
 
-  desiredModuleDataForNT = {
-    fl.angle.Radians().to<double>(),
-    fl.speed.convert<units::feet_per_second>().to<double>(),
-    fr.angle.Radians().to<double>(),
-    fr.speed.convert<units::feet_per_second>().to<double>(),
-    bl.angle.Radians().to<double>(),
-    bl.speed.convert<units::feet_per_second>().to<double>(),
-    br.angle.Radians().to<double>(),
-    br.speed.convert<units::feet_per_second>().to<double>(),
-  };
+  desiredModuleDataForNT[0] = fl.angle.Radians().to<double>(),
+  desiredModuleDataForNT[1] = fl.speed.convert<units::feet_per_second>().to<double>();
+  desiredModuleDataForNT[2] = fr.angle.Radians().to<double>();
+  desiredModuleDataForNT[3] = fr.speed.convert<units::feet_per_second>().to<double>();
+  desiredModuleDataForNT[4] = bl.angle.Radians().to<double>();
+  desiredModuleDataForNT[5] = bl.speed.convert<units::feet_per_second>().to<double>();
+  desiredModuleDataForNT[6] = br.angle.Radians().to<double>();
+  desiredModuleDataForNT[7] = br.speed.convert<units::feet_per_second>().to<double>();
 
   frc::SmartDashboard::PutNumberArray("Desired Swerve Module Data", desiredModuleDataForNT);
 
@@ -67,48 +65,77 @@ void str::SwerveDrivebase::Drive(
 }
 
 void str::SwerveDrivebase::Periodic() {
-  odometry.Update(
-    imu.GetYaw(),
-    {flModule.GetPosition(), frModule.GetPosition(), blModule.GetPosition(), brModule.GetPosition()}
-  );
-  frc::Pose2d pose;
+  frc::Rotation2d imuYaw = imu.GetYaw();
+  std::array<frc::SwerveModulePosition, 4> modulePositions =
+    {flModule.GetPosition(), frModule.GetPosition(), blModule.GetPosition(), brModule.GetPosition()};
+  std::array<frc::SwerveModuleState, 4> moduleStates =
+    {flModule.GetState(), frModule.GetState(), blModule.GetState(), brModule.GetState()};
+  odometry.Update(imuYaw, {modulePositions[0], modulePositions[1], modulePositions[2], modulePositions[3]});
+  estimator.Update(imuYaw, {modulePositions[0], modulePositions[1], modulePositions[2], modulePositions[3]});
+
+  frc::Pose2d odomPose = odometry.GetPose();
+  frc::Pose2d estimatorPose = estimator.GetEstimatedPosition();
+
+  str::Field::GetInstance().SetRobotPosition(odomPose);
+  str::Field::GetInstance().SetObjectPosition("Swerve Pose Estimation", estimatorPose);
+
   if(frc::RobotBase::IsSimulation()) {
-    pose = swerveSim.GetCurrentPose();
+    frc::Pose2d simPose = swerveSim.GetCurrentPose();
+    str::Field::GetInstance().SetObjectPosition("Swerve Sim Position", simPose);
+    str::Field::GetInstance().SetObjectPosition(
+      "FL Module Pose",
+      simPose.TransformBy(frc::Transform2d(flLocation, moduleStates[0].angle))
+    );
+    str::Field::GetInstance().SetObjectPosition(
+      "FR Module Pose",
+      simPose.TransformBy(frc::Transform2d(frLocation, moduleStates[1].angle))
+    );
+    str::Field::GetInstance().SetObjectPosition(
+      "BL Module Pose",
+      simPose.TransformBy(frc::Transform2d(blLocation, moduleStates[2].angle))
+    );
+    str::Field::GetInstance().SetObjectPosition(
+      "BR Module Pose",
+      simPose.TransformBy(frc::Transform2d(brLocation, moduleStates[3].angle))
+    );
   } else {
-    pose = odometry.GetPose();
+    str::Field::GetInstance().SetObjectPosition(
+      "FL Module Pose",
+      estimatorPose.TransformBy(frc::Transform2d(flLocation, moduleStates[0].angle))
+    );
+    str::Field::GetInstance().SetObjectPosition(
+      "FR Module Pose",
+      estimatorPose.TransformBy(frc::Transform2d(frLocation, moduleStates[1].angle))
+    );
+    str::Field::GetInstance().SetObjectPosition(
+      "BL Module Pose",
+      estimatorPose.TransformBy(frc::Transform2d(blLocation, moduleStates[2].angle))
+    );
+    str::Field::GetInstance().SetObjectPosition(
+      "BR Module Pose",
+      estimatorPose.TransformBy(frc::Transform2d(brLocation, moduleStates[3].angle))
+    );
   }
-  str::Field::GetInstance().SetRobotPosition(pose);
-  str::Field::GetInstance().SetObjectPosition(
-    "FL Module Pose",
-    pose.TransformBy(frc::Transform2d(flLocation, flModule.GetState().angle))
-  );
-  str::Field::GetInstance().SetObjectPosition(
-    "FR Module Pose",
-    pose.TransformBy(frc::Transform2d(frLocation, frModule.GetState().angle))
-  );
-  str::Field::GetInstance().SetObjectPosition(
-    "BL Module Pose",
-    pose.TransformBy(frc::Transform2d(blLocation, blModule.GetState().angle))
-  );
-  str::Field::GetInstance().SetObjectPosition(
-    "BR Module Pose",
-    pose.TransformBy(frc::Transform2d(brLocation, brModule.GetState().angle))
-  );
 
-  currentModuleDataForNT = {
-    flModule.GetState().angle.Radians().to<double>(),
-    flModule.GetState().speed.convert<units::feet_per_second>().to<double>(),
-    frModule.GetState().angle.Radians().to<double>(),
-    frModule.GetState().speed.convert<units::feet_per_second>().to<double>(),
-    blModule.GetState().angle.Radians().to<double>(),
-    blModule.GetState().speed.convert<units::feet_per_second>().to<double>(),
-    brModule.GetState().angle.Radians().to<double>(),
-    brModule.GetState().speed.convert<units::feet_per_second>().to<double>(),
-  };
+  currentModuleDataForNT[0] = moduleStates[0].angle.Radians().to<double>();
+  currentModuleDataForNT[1] = moduleStates[0].speed.convert<units::feet_per_second>().to<double>();
+  currentModuleDataForNT[2] = moduleStates[1].angle.Radians().to<double>();
+  currentModuleDataForNT[3] = moduleStates[1].speed.convert<units::feet_per_second>().to<double>();
+  currentModuleDataForNT[4] = moduleStates[2].angle.Radians().to<double>();
+  currentModuleDataForNT[5] = moduleStates[2].speed.convert<units::feet_per_second>().to<double>();
+  currentModuleDataForNT[6] = moduleStates[3].angle.Radians().to<double>();
+  currentModuleDataForNT[7] = moduleStates[3].speed.convert<units::feet_per_second>().to<double>();
 
-  currentPoseForNT = {pose.X().to<double>(), pose.Y().to<double>(), pose.Rotation().Radians().to<double>()};
+  currentOdomPoseForNT[0] = odomPose.X().to<double>();
+  currentOdomPoseForNT[1] = odomPose.Y().to<double>();
+  currentOdomPoseForNT[2] = odomPose.Rotation().Radians().to<double>();
 
-  frc::SmartDashboard::PutNumberArray("Robot Pose", currentPoseForNT);
+  currentEstimatorPoseForNT[0] = estimatorPose.X().to<double>();
+  currentEstimatorPoseForNT[1] = estimatorPose.Y().to<double>();
+  currentEstimatorPoseForNT[2] = estimatorPose.Rotation().Radians().to<double>();
+
+  frc::SmartDashboard::PutNumberArray("Robot Odom Pose", currentOdomPoseForNT);
+  frc::SmartDashboard::PutNumberArray("Robot Estimator Pose", currentEstimatorPoseForNT);
   frc::SmartDashboard::PutNumberArray("Current Swerve Module Data", currentModuleDataForNT);
 }
 
@@ -132,37 +159,37 @@ void str::SwerveDrivebase::SimulationPeriodic() {
   flModule.SetSimState(
     simModules[0].GetSteerEncoderPosition(),
     str::Units::ConvertAngularDistanceToLinearDistance(
-      simModules[0].GetDriveEncoderPosition(),
+      simModules[0].GetDriveEncoderPosition() / str::swerve_physical_dims::DRIVE_GEARBOX_RATIO,
       str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
     ),
-    simModules[0].GetDriveEncoderVelocity()
+    simModules[0].GetDriveEncoderVelocity() / str::swerve_physical_dims::DRIVE_GEARBOX_RATIO
   );
 
   frModule.SetSimState(
     simModules[1].GetSteerEncoderPosition(),
     str::Units::ConvertAngularDistanceToLinearDistance(
-      simModules[1].GetDriveEncoderPosition(),
+      simModules[1].GetDriveEncoderPosition() / str::swerve_physical_dims::DRIVE_GEARBOX_RATIO,
       str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
     ),
-    simModules[1].GetDriveEncoderVelocity()
+    simModules[1].GetDriveEncoderVelocity() / str::swerve_physical_dims::DRIVE_GEARBOX_RATIO
   );
 
   blModule.SetSimState(
     simModules[2].GetSteerEncoderPosition(),
     str::Units::ConvertAngularDistanceToLinearDistance(
-      simModules[2].GetDriveEncoderPosition(),
+      simModules[2].GetDriveEncoderPosition() / str::swerve_physical_dims::DRIVE_GEARBOX_RATIO,
       str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
     ),
-    simModules[2].GetDriveEncoderVelocity()
+    simModules[2].GetDriveEncoderVelocity() / str::swerve_physical_dims::DRIVE_GEARBOX_RATIO
   );
 
   brModule.SetSimState(
     simModules[3].GetSteerEncoderPosition(),
     str::Units::ConvertAngularDistanceToLinearDistance(
-      simModules[3].GetDriveEncoderPosition(),
+      simModules[3].GetDriveEncoderPosition() / str::swerve_physical_dims::DRIVE_GEARBOX_RATIO,
       str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
     ),
-    simModules[3].GetDriveEncoderVelocity()
+    simModules[3].GetDriveEncoderVelocity() / str::swerve_physical_dims::DRIVE_GEARBOX_RATIO
   );
 
   imu.SetYaw(swerveSim.GetCurrentPose().Rotation().Radians());
@@ -177,6 +204,14 @@ void str::SwerveDrivebase::ResetPose(const frc::Pose2d& newPose) {
   blModule.ResetEncoders();
   brModule.ResetEncoders();
   odometry.ResetPosition(
+    imu.GetYaw(),
+    {frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},
+     frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},
+     frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},
+     frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}}},
+    newPose
+  );
+  estimator.ResetPosition(
     imu.GetYaw(),
     {frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},
      frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},

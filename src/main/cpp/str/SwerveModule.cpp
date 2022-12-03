@@ -194,7 +194,3 @@ units::meters_per_second_t str::SwerveModule::ConvertDriveEncoderSpeedToVelocity
     str::swerve_physical_dims::DRIVE_WHEEL_DIAMETER / 2
   );
 }
-
-double str::SwerveModule::MapZeroThreeSixtyToOneEighty(double in) {
-  return std::fmod((in + 180), 360) - 180;
-}
