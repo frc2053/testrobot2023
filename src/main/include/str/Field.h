@@ -15,6 +15,7 @@ namespace str {
 
     void SetRobotPosition(const frc::Pose2d& newPosition);
     void SetObjectPosition(std::string_view object_name, const frc::Pose2d& newPosition);
+    void DrawTraj(std::string name, const frc::Trajectory& traj);
     frc::Field2d* GetField() {
       return &field;
     };

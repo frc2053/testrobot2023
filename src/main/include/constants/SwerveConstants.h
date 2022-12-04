@@ -1,7 +1,9 @@
 #pragma once
 
 #include <frc/system/plant/DCMotor.h>
+#include <frc/trajectory/TrapezoidProfile.h>
 #include <units/acceleration.h>
+#include <units/angular_acceleration.h>
 #include <units/dimensionless.h>
 #include <units/length.h>
 #include <units/moment_of_inertia.h>
@@ -34,11 +36,17 @@ namespace str {
     static constexpr auto DRIVE_KV = 2.4253 * 1_V / 1_mps;
     static constexpr auto DRIVE_KA = 0.12445 * 1_V / 1_mps_sq;
 
+    static constexpr auto GLOBAL_POSE_TRANS_KP = 10.0;
+    static constexpr auto GLOBAL_POSE_ROT_KP = 5.0;
+
     static constexpr units::volt_t MAX_DRIVE_VOLTAGE = 10_V;
 
     static constexpr units::meters_per_second_t MAX_CHASSIS_SPEED = 17.5853_fps;
     static constexpr units::meters_per_second_t MAX_CHASSIS_SPEED_10_V = 14.78_fps;
     static constexpr units::radians_per_second_t MAX_CHASSIS_ROT_SPEED = 1080_deg_per_s;
+    static constexpr units::radians_per_second_squared_t MAX_CHASSIS_ROT_ACCEL = 10000_deg_per_s_sq;
+
+    extern const frc::TrapezoidProfile<units::radians>::Constraints GLOBAL_THETA_CONTROLLER_CONSTRAINTS;
   }   // namespace swerve_drive_consts
 
   namespace swerve_physical_dims {

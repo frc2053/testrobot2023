@@ -18,7 +18,7 @@ namespace str {
   public:
     SwerveDrivebase();
     frc::Rotation2d GetRobotYaw();
-    frc::Pose2d GetRobotPoseBasedOnOdometry();
+    frc::Pose2d GetRobotPose();
     void Periodic();
     void SimulationPeriodic();
     void ResetPose(const frc::Pose2d& newPose = frc::Pose2d());
@@ -30,6 +30,13 @@ namespace str {
       bool openLoopDrive,
       bool voltageComp
     );
+    void DirectSetModuleStates(
+      frc::SwerveModuleState fl,
+      frc::SwerveModuleState fr,
+      frc::SwerveModuleState bl,
+      frc::SwerveModuleState br
+    );
+    frc::SwerveDriveKinematics<4>& GetKinematics();
 
   private:
     str::IMU imu{};
@@ -61,10 +68,6 @@ namespace str {
       str::swerve_can_ids::REAR_RIGHT_STEER_TALON_ID};
 
     frc::SwerveDriveKinematics<4> kinematics{flLocation, frLocation, blLocation, brLocation};
-    frc::SwerveDriveOdometry<4> odometry{
-      kinematics,
-      imu.GetYaw(),
-      {flModule.GetPosition(), frModule.GetPosition(), blModule.GetPosition(), brModule.GetPosition()}};
     frc::SwerveDrivePoseEstimator<4> estimator{
       kinematics,
       imu.GetYaw(),
@@ -95,7 +98,6 @@ namespace str {
 
     std::array<double, 8> currentModuleDataForNT{};
     std::array<double, 8> desiredModuleDataForNT{};
-    std::array<double, 3> currentOdomPoseForNT{};
     std::array<double, 3> currentEstimatorPoseForNT{};
   };
 }   // namespace str

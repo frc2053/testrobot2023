@@ -51,8 +51,11 @@ void SwerveCommandRobot::ConfigureBindings() {
 
 frc2::CommandPtr SwerveCommandRobot::GetAutonomousCommand() {
   // An example command will be run in autonomous
-  return frc2::InstantCommand{[] {
-           frc::DataLogManager::Log("Test Auto Command");
-         }}
-    .ToPtr();
+  return driveSubsystem.FollowPathFactory(
+    15_fps,
+    200_mps_sq,
+    frc::Pose2d{0_m, 13_ft, 0_rad},
+    {frc::Translation2d{4_ft, 9_ft}},
+    frc::Pose2d{8_ft, 13_ft, 90_deg}
+  );
 }
