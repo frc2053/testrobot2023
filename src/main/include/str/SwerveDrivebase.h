@@ -43,29 +43,37 @@ namespace str {
 
     frc::Translation2d flLocation{
       str::swerve_physical_dims::WHEELBASE_LENGTH / 2,
-      str::swerve_physical_dims::WHEELBASE_WIDTH / 2};
+      str::swerve_physical_dims::WHEELBASE_WIDTH / 2
+    };
     frc::Translation2d frLocation{
       str::swerve_physical_dims::WHEELBASE_LENGTH / 2,
-      -str::swerve_physical_dims::WHEELBASE_WIDTH / 2};
+      -str::swerve_physical_dims::WHEELBASE_WIDTH / 2
+    };
     frc::Translation2d blLocation{
       -str::swerve_physical_dims::WHEELBASE_LENGTH / 2,
-      str::swerve_physical_dims::WHEELBASE_WIDTH / 2};
+      str::swerve_physical_dims::WHEELBASE_WIDTH / 2
+    };
     frc::Translation2d brLocation{
       -str::swerve_physical_dims::WHEELBASE_LENGTH / 2,
-      -str::swerve_physical_dims::WHEELBASE_WIDTH / 2};
+      -str::swerve_physical_dims::WHEELBASE_WIDTH / 2
+    };
 
     str::SwerveModule flModule{
       str::swerve_can_ids::FRONT_LEFT_DRIVE_TALON_ID,
-      str::swerve_can_ids::FRONT_LEFT_STEER_TALON_ID};
+      str::swerve_can_ids::FRONT_LEFT_STEER_TALON_ID
+    };
     str::SwerveModule frModule{
       str::swerve_can_ids::FRONT_RIGHT_DRIVE_TALON_ID,
-      str::swerve_can_ids::FRONT_RIGHT_STEER_TALON_ID};
+      str::swerve_can_ids::FRONT_RIGHT_STEER_TALON_ID
+    };
     str::SwerveModule blModule{
       str::swerve_can_ids::REAR_LEFT_DRIVE_TALON_ID,
-      str::swerve_can_ids::REAR_LEFT_STEER_TALON_ID};
+      str::swerve_can_ids::REAR_LEFT_STEER_TALON_ID
+    };
     str::SwerveModule brModule{
       str::swerve_can_ids::REAR_RIGHT_DRIVE_TALON_ID,
-      str::swerve_can_ids::REAR_RIGHT_STEER_TALON_ID};
+      str::swerve_can_ids::REAR_RIGHT_STEER_TALON_ID
+    };
 
     frc::SwerveDriveKinematics<4> kinematics{flLocation, frLocation, blLocation, brLocation};
     frc::SwerveDrivePoseEstimator<4> estimator{
@@ -74,7 +82,8 @@ namespace str {
       {flModule.GetPosition(), frModule.GetPosition(), blModule.GetPosition(), brModule.GetPosition()},
       frc::Pose2d{},
       {0.1, 0.1, 0.1},
-      {0.9, 0.9, 0.9}};
+      {0.9, 0.9, 0.9}
+    };
 
     frc::SwerveModulePosition prevflPos{};
     frc::SwerveModulePosition prevfrPos{};
@@ -94,10 +103,11 @@ namespace str {
       str::swerve_physical_dims::ROBOT_MASS,
       str::swerve_physical_dims::ROBOT_MOI,
       str::swerve_physical_dims::TREAD_STATIC_COEF_FRIC,
-      str::swerve_physical_dims::TREAD_KINETIC_COEF_FRIC};
+      str::swerve_physical_dims::TREAD_KINETIC_COEF_FRIC
+    };
 
     std::array<double, 8> currentModuleDataForNT{};
     std::array<double, 8> desiredModuleDataForNT{};
     std::array<double, 3> currentEstimatorPoseForNT{};
   };
-}   // namespace str
+}   

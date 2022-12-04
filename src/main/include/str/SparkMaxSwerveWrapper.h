@@ -29,4 +29,4 @@ namespace str {
     hal::SimDouble positionConversionFactor;
     frc2::PIDController fakePid;
   };
-}   // namespace str
+}   

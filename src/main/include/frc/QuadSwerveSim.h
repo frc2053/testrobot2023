@@ -30,12 +30,14 @@ namespace frc {
       units::scalar_t kineticCoefFric
     ) :
       robotMass{robotTotalMass},
-      robotMomentOfInertia{robotMOI}, modulePositions{modulePos},
+      robotMomentOfInertia{robotMOI},
+      modulePositions{modulePos},
       moduleTransforms{
         Transform2d{modulePositions[0], Rotation2d{0_deg}},
         Transform2d{modulePositions[1], Rotation2d{0_deg}},
         Transform2d{modulePositions[2], Rotation2d{0_deg}},
-        Transform2d{modulePositions[3], Rotation2d{0_deg}}},
+        Transform2d{modulePositions[3], Rotation2d{0_deg}}
+      },
       simModules{
         SwerveModuleSim{
           steerGearbox,
@@ -48,7 +50,8 @@ namespace frc {
           frictionCoef,
           robotMass / 4,
           staticCoefFriction,
-          kineticCoefFric},
+          kineticCoefFric
+        },
         SwerveModuleSim{
           steerGearbox,
           steerGearboxRatio,
@@ -60,7 +63,8 @@ namespace frc {
           frictionCoef,
           robotMass / 4,
           staticCoefFriction,
-          kineticCoefFric},
+          kineticCoefFric
+        },
         SwerveModuleSim{
           steerGearbox,
           steerGearboxRatio,
@@ -72,7 +76,8 @@ namespace frc {
           frictionCoef,
           robotMass / 4,
           staticCoefFriction,
-          kineticCoefFric},
+          kineticCoefFric
+        },
         SwerveModuleSim{
           steerGearbox,
           steerGearboxRatio,
@@ -84,7 +89,11 @@ namespace frc {
           frictionCoef,
           robotMass / 4,
           staticCoefFriction,
-          kineticCoefFric}} {};
+          kineticCoefFric
+        }
+      } {
+      
+    };
 
     void ModelReset(Pose2d pose) {
       prevAccel = Vector2d<units::meters_per_second_squared>();
@@ -134,8 +143,7 @@ namespace frc {
       std::array<ForceAtPose2d, 4> netXTreadFricForces{};
       for(int i = 0; i < 4; i++) {
         units::scalar_t perWheelForceFrac = 1.0 / 4.0;
-        Force2d preFricForceAtModule =
-          preFricNetForceRobotCenter.GetForceInRefFrame(simModules[i].GetModulePose()).Times(perWheelForceFrac);
+        Force2d preFricForceAtModule = preFricNetForceRobotCenter.GetForceInRefFrame(simModules[i].GetModulePose()).Times(perWheelForceFrac);
         netXTreadFricForces[i] = simModules[i].GetCrossTreadFrictionalForce(preFricForceAtModule, dt);
       }
 
@@ -159,11 +167,13 @@ namespace frc {
 
       Vector2d<units::meters_per_second_squared> accel{
         units::meters_per_second_squared_t{temp.x.to<double>()},
-        units::meters_per_second_squared_t{temp.y.to<double>()}};
+        units::meters_per_second_squared_t{temp.y.to<double>()}
+      };
 
       Vector2d<units::meters_per_second> velocity{
         prevVel.x + (accel.x + prevAccel.x) / 2 * dt,
-        prevVel.y + (accel.y + prevAccel.y) / 2 * dt};
+        prevVel.y + (accel.y + prevAccel.y) / 2 * dt
+      };
 
       Translation2d posChange{(velocity.x + prevVel.x) / 2 * dt, (velocity.y + prevVel.y) / 2 * dt};
 
@@ -194,4 +204,4 @@ namespace frc {
     units::radians_per_second_t prevRotVel{};
     Pose2d currentPose{};
   };
-};   // namespace frc
+};   

@@ -19,7 +19,7 @@ namespace str {
     static constexpr int REAR_LEFT_STEER_TALON_ID = 7;
     static constexpr int REAR_RIGHT_DRIVE_TALON_ID = 8;
     static constexpr int REAR_RIGHT_STEER_TALON_ID = 9;
-  }   // namespace swerve_can_ids
+  }   
 
   namespace swerve_drive_consts {
     static constexpr double STEER_KF = 0;
@@ -47,7 +47,7 @@ namespace str {
     static constexpr units::radians_per_second_squared_t MAX_CHASSIS_ROT_ACCEL = 10000_deg_per_s_sq;
 
     extern const frc::TrapezoidProfile<units::radians>::Constraints GLOBAL_THETA_CONTROLLER_CONSTRAINTS;
-  }   // namespace swerve_drive_consts
+  }   
 
   namespace swerve_physical_dims {
     static constexpr units::meter_t WHEELBASE_WIDTH = 27_in;
@@ -63,5 +63,5 @@ namespace str {
     static constexpr units::kilogram_square_meter_t MODULE_MOI = 0.01_kg_sq_m;
     static constexpr auto DRIVE_GEARBOX = frc::DCMotor::Falcon500(1);
     static constexpr auto STEER_GEARBOX = frc::DCMotor::NEO550(1);
-  }   // namespace swerve_physical_dims
-}   // namespace str
+  }   
+}   

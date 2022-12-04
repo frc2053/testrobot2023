@@ -31,4 +31,4 @@ namespace str {
     hal::SimDouble simGyroRate;
     units::radian_t internalOffset{0};
   };
-}   // namespace str
+}   

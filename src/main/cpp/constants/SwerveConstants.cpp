@@ -2,8 +2,10 @@
 
 namespace str {
   namespace swerve_drive_consts {
-    const frc::TrapezoidProfile<units::radians>::Constraints GLOBAL_THETA_CONTROLLER_CONSTRAINTS{
+    const frc::TrapezoidProfile<units::radians>::Constraints GLOBAL_THETA_CONTROLLER_CONSTRAINTS
+    {
       MAX_CHASSIS_ROT_SPEED,
-      MAX_CHASSIS_ROT_ACCEL};
+      MAX_CHASSIS_ROT_ACCEL
+    };
   }
-}   // namespace str
+}   

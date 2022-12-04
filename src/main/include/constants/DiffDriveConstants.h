@@ -13,7 +13,7 @@ namespace str {
     static constexpr int REAR_LEFT_DRIVEBASE_TALON_ID = 3;
     static constexpr int FRONT_RIGHT_DRIVEBASE_TALON_ID = 4;
     static constexpr int REAR_RIGHT_DRIVEBASE_TALON_ID = 5;
-  }   // namespace diff_can_ids
+  }   
 
   namespace diff_drive_consts {
     // Motor Velocity PID values
@@ -32,12 +32,12 @@ namespace str {
     static constexpr units::volt_t MAX_DRIVE_VOLTAGE = 10_V;
 
     extern const frc::LinearSystem<2, 2, 2> DRIVE_TRAIN_PLANT;
-  }   // namespace diff_drive_consts
+  }   
 
   namespace diff_physical_dims {
     static constexpr units::meter_t WHEELBASE_WIDTH = 27_in;
     static constexpr units::meter_t DRIVE_WHEEL_DIAMETER = 4_in;
     static constexpr double DRIVEBASE_GEARBOX_RATIO = 7.0;
     static constexpr auto DRIVEBASE_GEARBOX = frc::DCMotor::Falcon500(2);
-  }   // namespace diff_physical_dims
-}   // namespace str
+  }   
+}   

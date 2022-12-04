@@ -66,8 +66,7 @@ frc::SwerveModulePosition str::SwerveModule::GetPosition() {
 }
 
 void str::SwerveModule::SetDesiredState(const frc::SwerveModuleState& referenceState, bool openLoop, bool voltageComp) {
-  const frc::SwerveModuleState state =
-    frc::SwerveModuleState::Optimize(referenceState, units::radian_t(steerMotor.GetPosition()));
+  const frc::SwerveModuleState state = frc::SwerveModuleState::Optimize(referenceState, units::radian_t(steerMotor.GetPosition()));
 
   units::volt_t driveFFResult = 0_V;
   units::second_t timeElapsed = ffTimer.Get();
@@ -162,8 +161,11 @@ void str::SwerveModule::ConfigureSteeringMotor() {
 
   steerMotor.EnableVoltageCompensation(12);
 
-  steerMotor
-    .SetPID(str::swerve_drive_consts::STEER_KP, str::swerve_drive_consts::STEER_KI, str::swerve_drive_consts::STEER_KD);
+  steerMotor.SetPID(
+    str::swerve_drive_consts::STEER_KP, 
+    str::swerve_drive_consts::STEER_KI, 
+    str::swerve_drive_consts::STEER_KD
+  );
 
   steerMotor.BurnFlash();
 }

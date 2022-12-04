@@ -31,8 +31,7 @@ namespace str {
     str::IMU imu{};
 
     ctre::phoenix::motorcontrol::can::WPI_TalonFX frontLeftController{str::diff_can_ids::FRONT_LEFT_DRIVEBASE_TALON_ID};
-    ctre::phoenix::motorcontrol::can::WPI_TalonFX frontRightController{
-      str::diff_can_ids::FRONT_RIGHT_DRIVEBASE_TALON_ID};
+    ctre::phoenix::motorcontrol::can::WPI_TalonFX frontRightController{str::diff_can_ids::FRONT_RIGHT_DRIVEBASE_TALON_ID};
     ctre::phoenix::motorcontrol::can::WPI_TalonFX rearLeftController{str::diff_can_ids::REAR_LEFT_DRIVEBASE_TALON_ID};
     ctre::phoenix::motorcontrol::can::WPI_TalonFX rearRightController{str::diff_can_ids::REAR_RIGHT_DRIVEBASE_TALON_ID};
 
@@ -50,7 +49,8 @@ namespace str {
       0_m,
       frc::Pose2d{},
       {0.0, 0.0, 0.0},
-      {0.0, 0.0, 0.0}};
+      {0.0, 0.0, 0.0}
+    };
 
     frc::sim::DifferentialDrivetrainSim drivetrainSimulator{
       str::diff_drive_consts::DRIVE_TRAIN_PLANT,
@@ -58,6 +58,7 @@ namespace str {
       str::diff_physical_dims::DRIVEBASE_GEARBOX,
       str::diff_physical_dims::DRIVEBASE_GEARBOX_RATIO,
       str::diff_physical_dims::DRIVE_WHEEL_DIAMETER / 2,
-      {0.001, 0.001, 0.0001, 0.1, 0.1, 0.005, 0.005}};
+      {0.001, 0.001, 0.0001, 0.1, 0.1, 0.005, 0.005}
+    };
   };
-}   // namespace str
+}   

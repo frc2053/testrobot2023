@@ -18,7 +18,8 @@ frc::Rotation2d str::SwerveDrivebase::GetRobotYaw() {
 frc::Pose2d str::SwerveDrivebase::GetRobotPose() {
   if(frc::RobotBase::IsSimulation()) {
     return swerveSim.GetCurrentPose();
-  } else {
+  } 
+  else {
     return estimator.GetEstimatedPosition();
   }
 }
@@ -86,10 +87,20 @@ void str::SwerveDrivebase::DirectSetModuleStates(
 
 void str::SwerveDrivebase::Periodic() {
   frc::Rotation2d imuYaw = imu.GetYaw();
-  std::array<frc::SwerveModulePosition, 4> modulePositions =
-    {flModule.GetPosition(), frModule.GetPosition(), blModule.GetPosition(), brModule.GetPosition()};
-  std::array<frc::SwerveModuleState, 4> moduleStates =
-    {flModule.GetState(), frModule.GetState(), blModule.GetState(), brModule.GetState()};
+  std::array<frc::SwerveModulePosition, 4> modulePositions = {
+    flModule.GetPosition(), 
+    frModule.GetPosition(), 
+    blModule.GetPosition(), 
+    brModule.GetPosition()
+  };
+
+  std::array<frc::SwerveModuleState, 4> moduleStates = {
+    flModule.GetState(), 
+    frModule.GetState(), 
+    blModule.GetState(), 
+    brModule.GetState()
+  };
+
   estimator.Update(imuYaw, {modulePositions[0], modulePositions[1], modulePositions[2], modulePositions[3]});
 
   frc::Pose2d estimatorPose = estimator.GetEstimatedPosition();
@@ -217,10 +228,12 @@ void str::SwerveDrivebase::ResetPose(const frc::Pose2d& newPose) {
   brModule.ResetEncoders();
   estimator.ResetPosition(
     imu.GetYaw(),
-    {frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},
-     frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},
-     frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},
-     frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}}},
+    {
+      frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},
+      frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},
+      frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},
+      frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}}
+    },
     newPose
   );
 }

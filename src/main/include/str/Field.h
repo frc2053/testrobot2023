@@ -9,7 +9,7 @@ namespace str {
     static Field& GetInstance() {
       static Field instance;
       return instance;
-    }
+    };
     Field(Field const&) = delete;
     void operator=(Field const&) = delete;
 
@@ -22,7 +22,7 @@ namespace str {
 
   private:
     Field() {
-    }
+    };
     frc::Field2d field;
   };
-}   // namespace str
+}   

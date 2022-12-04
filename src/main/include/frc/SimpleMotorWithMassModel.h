@@ -12,7 +12,10 @@ namespace frc {
     sim::FlywheelSim fwSim;
     units::radian_t displacement{};
     SimpleMotorWithMassModel(DCMotor motor, double gearing, units::moment_of_inertia::kilogram_square_meter_t moi) :
-      fwSim(motor, gearing, moi){};
+      fwSim(motor, gearing, moi)
+    {
+  
+    };
     void Update(units::volt_t voltage, units::second_t dt) {
       fwSim.SetInputVoltage(voltage);
       fwSim.Update(dt);
@@ -28,4 +31,4 @@ namespace frc {
       return displacement;
     }
   };
-}   // namespace frc
+}   

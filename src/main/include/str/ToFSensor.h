@@ -37,4 +37,4 @@ namespace str {
     bool isConnected{true};
     bool simulateSensor{false};
   };
-}*/   // namespace str
+}*/   

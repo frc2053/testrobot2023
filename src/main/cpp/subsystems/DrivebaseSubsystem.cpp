@@ -24,12 +24,11 @@ void DrivebaseSubsystem::SimulationPeriodic() {
 
 frc2::CommandPtr DrivebaseSubsystem::ArcadeDriveFactory(std::function<double()> fow, std::function<double()> rot) {
   return frc2::RunCommand(
-           [this, fow, rot]() {
-             // diffDrivebase.ArcadeDrive(fow(), rot());
-           },
-           {this}
-  )
-    .ToPtr();
+    [this, fow, rot]() {
+      // diffDrivebase.ArcadeDrive(fow(), rot());
+    },
+    {this}
+  ).ToPtr();
 }
 
 frc2::CommandPtr DrivebaseSubsystem::DriveFactory(
@@ -38,17 +37,17 @@ frc2::CommandPtr DrivebaseSubsystem::DriveFactory(
   std::function<double()> rot
 ) {
   return frc2::RunCommand(
-           [this, fow, side, rot]() {
-             swerveDrivebase.Drive(
-               fow() * str::swerve_drive_consts::MAX_CHASSIS_SPEED,
-               side() * str::swerve_drive_consts::MAX_CHASSIS_SPEED,
-               rot() * str::swerve_drive_consts::MAX_CHASSIS_ROT_SPEED,
-               true,
-               true,
-               false
-             );
-           },
-           {this}
+    [this, fow, side, rot]() {
+      swerveDrivebase.Drive(
+        fow() * str::swerve_drive_consts::MAX_CHASSIS_SPEED,
+        side() * str::swerve_drive_consts::MAX_CHASSIS_SPEED,
+        rot() * str::swerve_drive_consts::MAX_CHASSIS_ROT_SPEED,
+        true,
+        true,
+        false
+      );
+    },
+    {this}
   )
     .ToPtr();
 }
@@ -59,15 +58,15 @@ frc2::CommandPtr DrivebaseSubsystem::ResetOdomFactory(
   std::function<double()> rot_deg
 ) {
   return frc2::InstantCommand(
-           [this, x_ft, y_ft, rot_deg]() {
-             //  diffDrivebase.ResetPose(
-             //    frc::Pose2d(units::foot_t(x_ft()), units::foot_t(y_ft()), units::degree_t(rot_deg()))
-             //  );
-             swerveDrivebase.ResetPose(
-               frc::Pose2d(units::foot_t(x_ft()), units::foot_t(y_ft()), units::degree_t(rot_deg()))
-             );
-           },
-           {this}
+    [this, x_ft, y_ft, rot_deg]() {
+      //  diffDrivebase.ResetPose(
+      //    frc::Pose2d(units::foot_t(x_ft()), units::foot_t(y_ft()), units::degree_t(rot_deg()))
+      //  );
+      swerveDrivebase.ResetPose(
+        frc::Pose2d(units::foot_t(x_ft()), units::foot_t(y_ft()), units::degree_t(rot_deg()))
+      );
+    },
+    {this}
   )
     .ToPtr();
 }
@@ -102,19 +101,18 @@ frc2::CommandPtr DrivebaseSubsystem::FollowPathFactory(
     {this}
   );
   return frc2::SequentialCommandGroup(
-           frc2::InstantCommand(
-             [this, trajectory]() {
-               swerveDrivebase.ResetPose(trajectory.InitialPose());
-             },
-             {}
-           ),
-           std::move(controllerCmd),
-           frc2::InstantCommand(
-             [this]() {
-               swerveDrivebase.Drive(0_mps, 0_mps, 0_rad_per_s, false, false, true);
-             },
-             {}
-           )
-  )
-    .ToPtr();
+    frc2::InstantCommand(
+      [this, trajectory]() {
+        swerveDrivebase.ResetPose(trajectory.InitialPose());
+      },
+      {}
+    ),
+    std::move(controllerCmd),
+    frc2::InstantCommand(
+      [this]() {
+        swerveDrivebase.Drive(0_mps, 0_mps, 0_rad_per_s, false, false, true);
+      },
+      {}
+    )
+  ).ToPtr();
 }

@@ -25,9 +25,14 @@ namespace frc {
       units::scalar_t kineticCoefFric
     ) :
       encoderToSteerRatio(steeringEncoderRatio),
-      driveMotorToOutputGearboxRatio(driveGearboxRatio), steerMotor(steerGearbox, steerGearboxRatio, moduleMOI),
-      driveMotor(driveGearbox, driveGearboxRatio, wheelRadius, frictionCoef), normalForce(massOverWheel * 9.81_mps_sq),
-      treadStaticFricForce(staticCoefFriction * normalForce), treadKineticFricForce(kineticCoefFric * normalForce){};
+      driveMotorToOutputGearboxRatio(driveGearboxRatio), 
+      steerMotor(steerGearbox, steerGearboxRatio, moduleMOI),
+      driveMotor(driveGearbox, driveGearboxRatio, wheelRadius, frictionCoef), 
+      normalForce(massOverWheel * 9.81_mps_sq),
+      treadStaticFricForce(staticCoefFriction * normalForce), 
+      treadKineticFricForce(kineticCoefFric * normalForce) {
+      
+    };
 
     void SetInputVoltages(units::volt_t steerVoltage, units::volt_t driveVoltage) {
       currentSteerVoltage = steerVoltage;
@@ -77,8 +82,7 @@ namespace frc {
       crossTreadForceMag = netForce.GetVector().Dot(crossTreadUnitVector);
       Force2d fricForce{};
       if(units::math::fabs(crossTreadForceMag) > treadStaticFricForce || units::math::fabs(crossTreadVelMag) > 0.001_mps) {
-        crossTreadFricForceMag =
-          -1.0 * str::Units::sgn<units::meters_per_second_t>(crossTreadVelMag) * treadKineticFricForce;
+        crossTreadFricForceMag = -1.0 * str::Units::sgn<units::meters_per_second_t>(crossTreadVelMag) * treadKineticFricForce;
       } else {
         crossTreadFricForceMag = -1.0 * crossTreadForceMag;
       }
@@ -98,7 +102,8 @@ namespace frc {
       if(first) {
         prevModulePose = curPose;
         first = false;
-      } else {
+      } 
+      else {
         prevModulePose = currentModulePose;
       }
 
@@ -136,4 +141,4 @@ namespace frc {
 
     bool first{true};
   };
-}   // namespace frc
+}   

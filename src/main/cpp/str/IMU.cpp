@@ -9,7 +9,8 @@ str::IMU::IMU() {
     simGyroYaw = HALSIM_GetSimValueHandle(simGyro, "Yaw");
     simGyroRate = HALSIM_GetSimValueHandle(simGyro, "Rate");
     frc::DataLogManager::Log("IMU is running in simulation!");
-  } else {
+  } 
+  else {
     frc::DataLogManager::Log("Initialized real robot IMU!");
     simGyro = -1;
     simGyroYaw = -1;
@@ -41,7 +42,8 @@ void str::IMU::SetYaw(units::radian_t newYaw) {
   if(frc::RobotBase::IsSimulation()) {
     simGyroYaw.Set((-units::convert<units::radian, units::degree>(newYaw) + internalOffset).to<double>());
     frc::DataLogManager::Log("IMU yaw was set to " + units::to_string(newYaw));
-  } else {
+  } 
+  else {
     frc::DataLogManager::Log("You tried setting the gyro yaw not in simulation. This call did not do anything.");
   }
 }
@@ -50,7 +52,8 @@ void str::IMU::SetRate(units::radians_per_second_t newRate) {
   if(frc::RobotBase::IsSimulation()) {
     simGyroYaw.Set(-units::convert<units::radians_per_second, units::degrees_per_second>(newRate).to<double>());
     frc::DataLogManager::Log("IMU rate was set to " + units::to_string(newRate));
-  } else {
+  } 
+  else {
     frc::DataLogManager::Log("You tried setting the gyro rate not in simulation. This call did not do anything.");
   }
 }

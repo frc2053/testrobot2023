@@ -28,8 +28,7 @@ void str::DiffDrivebase::Periodic() {
   frc::Rotation2d currentYaw = imu.GetYaw();
 
   units::meter_t currentLeftDist = ConvertDriveEncoderTicksToDistance(frontLeftController.GetSelectedSensorPosition());
-  units::meter_t currentRightDist =
-    ConvertDriveEncoderTicksToDistance(frontRightController.GetSelectedSensorPosition());
+  units::meter_t currentRightDist = ConvertDriveEncoderTicksToDistance(frontRightController.GetSelectedSensorPosition());
 
   driveOdometry.Update(currentYaw, currentLeftDist, currentRightDist);
 
@@ -143,7 +142,8 @@ void str::DiffDrivebase::ConfigureDriveMotors() {
   if(frc::RobotBase::IsSimulation()) {
     frontLeftController.SetInverted(ctre::phoenix::motorcontrol::InvertType::None);
     frontRightController.SetInverted(ctre::phoenix::motorcontrol::InvertType::None);
-  } else {
+  } 
+  else {
     frontLeftController.SetInverted(ctre::phoenix::motorcontrol::InvertType::InvertMotorOutput);
     frontRightController.SetInverted(ctre::phoenix::motorcontrol::InvertType::None);
   }
@@ -184,7 +184,8 @@ frc::DifferentialDriveWheelSpeeds str::DiffDrivebase::GetWheelSpeeds() {
         str::diff_physical_dims::DRIVEBASE_GEARBOX_RATIO
       ),
       str::diff_physical_dims::DRIVE_WHEEL_DIAMETER / 2
-    )};
+    )
+  };
 }
 
 void str::DiffDrivebase::ResetPose(const frc::Pose2d& newPose) {

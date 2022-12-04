@@ -18,8 +18,8 @@ public:
   void TestPeriodic() override;
   void SimulationInit() override;
   void SimulationPeriodic() override;
-
 private:
   SwerveCommandRobot robot;
+  
   std::optional<frc2::CommandPtr> autonomousCommand;
 };

@@ -34,7 +34,8 @@ namespace str {
     frc::SimpleMotorFeedforward<units::meters> driveFF{
       str::swerve_drive_consts::DRIVE_KS,
       str::swerve_drive_consts::DRIVE_KV,
-      str::swerve_drive_consts::DRIVE_KA};
+      str::swerve_drive_consts::DRIVE_KA
+    };
 
     str::SparkMaxSwerveWrapper steerMotor;
 
@@ -42,4 +43,4 @@ namespace str {
     units::second_t prevTime{0};
     frc::Timer ffTimer;
   };
-}   // namespace str
+}
