@@ -56,6 +56,7 @@ frc2::CommandPtr SwerveCommandRobot::GetAutonomousCommand() {
     200_mps_sq,
     frc::Pose2d{0_m, 13_ft, 0_rad},
     {frc::Translation2d{4_ft, 9_ft}},
-    frc::Pose2d{8_ft, 13_ft, 90_deg}
+    frc::Pose2d{8_ft, 13_ft, 90_deg},
+    true
   );
 }

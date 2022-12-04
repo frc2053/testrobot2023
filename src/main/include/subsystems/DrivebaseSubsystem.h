@@ -22,7 +22,8 @@ public:
     units::meters_per_second_squared_t maxAccel,
     frc::Pose2d startPose,
     std::vector<frc::Translation2d> middlePoints,
-    frc::Pose2d endPose
+    frc::Pose2d endPose,
+    bool flipPath180
   );
   frc2::CommandPtr ResetOdomFactory(
     std::function<double()> x_ft,

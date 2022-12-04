@@ -220,8 +220,6 @@ void str::SwerveDrivebase::SimulationPeriodic() {
 
 void str::SwerveDrivebase::ResetPose(const frc::Pose2d& newPose) {
   swerveSim.ModelReset(newPose);
-  imu.SetOffset(newPose.Rotation().Radians());
-  imu.ZeroYaw();
   flModule.ResetEncoders();
   frModule.ResetEncoders();
   blModule.ResetEncoders();

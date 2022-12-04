@@ -76,11 +76,15 @@ frc2::CommandPtr DrivebaseSubsystem::FollowPathFactory(
   units::meters_per_second_squared_t maxAccel,
   frc::Pose2d startPose,
   std::vector<frc::Translation2d> middlePoints,
-  frc::Pose2d endPose
+  frc::Pose2d endPose,
+  bool flipPath180
 ) {
   frc::TrajectoryConfig config(maxSpeed, maxAccel);
   config.SetKinematics(swerveDrivebase.GetKinematics());
   auto trajectory = frc::TrajectoryGenerator::GenerateTrajectory(startPose, middlePoints, endPose, config);
+  if(flipPath180) {
+    trajectory = trajectory.RelativeTo(frc::Pose2d(frc::Translation2d(54_ft, 27_ft), frc::Rotation2d(180_deg)));
+  }
   str::Field::GetInstance().DrawTraj("Auto Path", trajectory);
   frc2::SwerveControllerCommand<4> controllerCmd(
     trajectory,
