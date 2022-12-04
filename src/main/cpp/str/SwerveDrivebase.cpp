@@ -224,13 +224,22 @@ void str::SwerveDrivebase::ResetPose(const frc::Pose2d& newPose) {
   frModule.ResetEncoders();
   blModule.ResetEncoders();
   brModule.ResetEncoders();
+
+  frc::Rotation2d yawToResetTo{0_deg};
+  if(frc::RobotBase::IsSimulation()) {
+    yawToResetTo = swerveSim.GetCurrentPose().Rotation()
+  }
+  else {
+    yawToResetTo = imu.GetYaw();
+  }
+
   estimator.ResetPosition(
-    imu.GetYaw(),
+    yawToResetTo,
     {
-      frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},
-      frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},
-      frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}},
-      frc::SwerveModulePosition{0_m, frc::Rotation2d{0_deg}}
+      frc::SwerveModulePosition{0_m, flModule.GetState().angle},
+      frc::SwerveModulePosition{0_m, frModule.GetState().angle},
+      frc::SwerveModulePosition{0_m, blModule.GetState().angle},
+      frc::SwerveModulePosition{0_m, brModule.GetState().angle}
     },
     newPose
   );

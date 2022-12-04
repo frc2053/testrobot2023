@@ -14,4 +14,9 @@ namespace str {
   namespace oi {
     static constexpr int DRIVER_CONTROLLER = 0;
   }
+
+  namespace vision {
+    static constexpr frc::Transform2d CAMERA_TO_ROBOT{5_in, 5_in, 0_deg};
+    static constexpr std::string TAG_LAYOUT_FILENAME{"2022-rapidreact.json"};
+  }
 }
