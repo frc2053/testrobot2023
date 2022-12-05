@@ -1,6 +1,7 @@
 #include "subsystems/VisionSubsystem.h"
 #include <frc/ComputerVisionUtil.h>
 #include "Constants.h"
+#include <photonlib/PhotonTrackedTarget.h>
 
 VisionSubsystem::VisionSubsystem() : tagLayout{frc::filesystem::GetDeployDirectory() + str::vision::TAG_LAYOUT_FILENAME} {
 }
