@@ -20,6 +20,6 @@ public:
   void SimulationPeriodic() override;
 private:
   SwerveCommandRobot robot;
-  
+
   std::optional<frc2::CommandPtr> autonomousCommand;
 };

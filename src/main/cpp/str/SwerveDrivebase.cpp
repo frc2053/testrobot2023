@@ -227,7 +227,7 @@ void str::SwerveDrivebase::ResetPose(const frc::Pose2d& newPose) {
 
   frc::Rotation2d yawToResetTo{0_deg};
   if(frc::RobotBase::IsSimulation()) {
-    yawToResetTo = swerveSim.GetCurrentPose().Rotation()
+    yawToResetTo = swerveSim.GetCurrentPose().Rotation();
   }
   else {
     yawToResetTo = imu.GetYaw();
