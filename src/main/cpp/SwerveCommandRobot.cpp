@@ -51,12 +51,31 @@ void SwerveCommandRobot::ConfigureBindings() {
 
 frc2::CommandPtr SwerveCommandRobot::GetAutonomousCommand() {
   // An example command will be run in autonomous
+  // return driveSubsystem.FollowPathFactory(
+  //   15_fps,
+  //   200_mps_sq,
+  //   frc::Pose2d{27_ft, 13_ft, 0_rad},
+  //   {
+  //     frc::Pose2d{30_ft, 10_ft, 0_rad},
+  //     frc::Pose2d{33_ft, 13_ft, 0_rad},
+  //     frc::Pose2d{36_ft, 10_ft, 0_rad},
+  //     frc::Pose2d{39_ft, 13_ft, 0_rad},
+  //     frc::Pose2d{36_ft, 19_ft, 0_rad},
+  //     frc::Pose2d{33_ft, 13_ft, 0_rad},
+  //     frc::Pose2d{30_ft, 19_ft, 0_rad}
+  //   },
+  //   frc::Pose2d{27_ft, 13_ft, 180_deg},
+  //   false
+  // );
+
   return driveSubsystem.FollowPathFactory(
     15_fps,
     200_mps_sq,
-    frc::Pose2d{0_m, 13_ft, 0_rad},
-    {frc::Translation2d{4_ft, 9_ft}},
-    frc::Pose2d{8_ft, 13_ft, 90_deg},
-    true
+    frc::Pose2d{0_ft, 0_ft, 0_rad},
+    {
+      frc::Pose2d{3_m, 0_ft, 180_deg},
+    },
+    frc::Pose2d{6_m, 0_ft, 0_deg},
+    false
   );
 }

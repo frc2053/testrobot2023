@@ -41,7 +41,7 @@ units::radian_t str::IMU::GetOffset() {
 void str::IMU::SetYaw(units::radian_t newYaw) {
   if(frc::RobotBase::IsSimulation()) {
     simGyroYaw.Set((-units::convert<units::radian, units::degree>(newYaw) + internalOffset).to<double>());
-    frc::DataLogManager::Log("IMU yaw was set to " + units::to_string(newYaw));
+    //frc::DataLogManager::Log("IMU yaw was set to " + units::to_string(newYaw));
   } 
   else {
     frc::DataLogManager::Log("You tried setting the gyro yaw not in simulation. This call did not do anything.");

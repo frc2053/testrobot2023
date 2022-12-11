@@ -7,6 +7,7 @@
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/SubsystemBase.h>
 #include <functional>
+#include <frc/trajectory/Trajectory.h>
 
 class DrivebaseSubsystem : public frc2::SubsystemBase {
 public:
@@ -21,7 +22,7 @@ public:
     units::meters_per_second_t maxSpeed,
     units::meters_per_second_squared_t maxAccel,
     frc::Pose2d startPose,
-    std::vector<frc::Translation2d> middlePoints,
+    std::vector<frc::Pose2d> middlePoints,
     frc::Pose2d endPose,
     bool flipPath180
   );
@@ -31,6 +32,13 @@ public:
     std::function<double()> rot_deg
   );
 private:
+  std::vector<frc::Rotation2d> CreateRotationVectorForPath(
+    std::vector<frc::Pose2d> allPoses,
+    frc::Trajectory trajectory
+  );
+  bool CompareTranslations(const frc::Translation2d& trans1, const frc::Translation2d& trans2);
+  std::vector<int> FindIndicesOfSwitchingRotation(const frc::Trajectory& traj, std::vector<frc::Pose2d> pointsToFind);
   // str::DiffDrivebase diffDrivebase{};
   str::SwerveDrivebase swerveDrivebase{};
+  int index{0};
 };
