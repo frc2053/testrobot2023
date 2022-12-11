@@ -6,7 +6,7 @@
 #include <frc2/command/InstantCommand.h>
 #include <frc2/command/RunCommand.h>
 #include <frc2/command/SequentialCommandGroup.h>
-#include <frc2/command/SwerveControllerCommand.h>
+#include <str/BetterSwerveControllerCommand.h>
 #include <units/length.h>
 #include <cmath>
 #include <iostream>
@@ -28,23 +28,19 @@ bool DrivebaseSubsystem::CompareTranslations(const frc::Translation2d& trans1, c
   return units::math::abs(trans1.X() - trans2.X()) <= 1_in && units::math::abs(trans1.Y() - trans2.Y()) <= 1_in;
 }
 
-std::vector<int> DrivebaseSubsystem::FindIndicesOfSwitchingRotation(const frc::Trajectory& traj, std::vector<frc::Pose2d> pointsToFind) {
-  std::vector<int> retVal{};
+std::vector<units::second_t> DrivebaseSubsystem::FindTimeOfSwitchingRotation(const frc::Trajectory& traj, std::vector<frc::Pose2d> pointsToFind) {
+  std::vector<units::second_t> retVal{};
 
   int searchIndex = 0;
-  int foundIndex = 0;
-  for(units::second_t time = 0_s; time < traj.TotalTime(); time = time + 20_ms) {
-
+  for(units::second_t sampleTime = 0_s; sampleTime <= traj.TotalTime(); sampleTime = sampleTime + 20_ms) {
     if(searchIndex > pointsToFind.size() - 1) {
       break;
     }
-
-    frc::Trajectory::State currentState = traj.Sample(time);
+    frc::Trajectory::State currentState = traj.Sample(sampleTime);
     if(CompareTranslations(currentState.pose.Translation(), pointsToFind[searchIndex].Translation())) {
-      retVal.push_back(foundIndex);
+      retVal.push_back(sampleTime);
       searchIndex++;
     }
-    foundIndex++;
   }
 
   return retVal;
@@ -55,41 +51,26 @@ std::vector<frc::Rotation2d> DrivebaseSubsystem::CreateRotationVectorForPath(
   std::vector<frc::Pose2d> allPoses,
   frc::Trajectory trajectory
 ) {
-  std::vector<frc::Rotation2d> retVal{trajectory.States().size()};
-  units::second_t currentTime = 0.00_s;
+  std::vector<frc::Rotation2d> retVal{};
+  std::vector<units::second_t> whereToLerp = FindTimeOfSwitchingRotation(trajectory, std::vector<frc::Pose2d>(allPoses.begin() + 1, allPoses.end()));
 
-  int index = 0;
-  int counter = 0;
-  frc::Rotation2d startAngle{allPoses[0].Rotation()};
+  int targetIndex = 1;
 
-  std::vector<int> testResult = FindIndicesOfSwitchingRotation(trajectory, allPoses);
+  units::radian_t startAngle = allPoses[0].Rotation().Radians();
+  units::radian_t goalAngle = allPoses[targetIndex].Rotation().Radians();
 
-  for(frc::Rotation2d& angleAtTime : retVal) {
-
-    frc::Pose2d targetPose{allPoses[index]};
-    
-    frc::Rotation2d targetAngle{targetPose.Rotation()};
-    frc::Trajectory::State currentState = trajectory.Sample(currentTime);
-
-    std::cout << "Target Pose: " << targetPose.X().to<double>() << ", " << targetPose.Y().to<double>() << ", " << targetPose.Rotation().Degrees().to<double>() << "\n";
-    std::cout << "Current State: " << currentState.pose.X().to<double>() << ", " << currentState.pose.Y().to<double>() << "\n";
-
-    units::radian_t result{std::lerp(startAngle.Radians().to<double>(), targetAngle.Radians().to<double>(), (double)counter / (double)testResult[index])};
-    angleAtTime = frc::Rotation2d{result};
-    std::cout << "Result Angle: " << angleAtTime.Degrees().to<double>() << "\n";
-    if(CompareTranslations(currentState.pose.Translation(), targetPose.Translation())) {
-      startAngle = targetAngle;
-      index++;
+  for(const units::second_t& lerpPoint : whereToLerp) {
+    for(units::second_t time = 0_s; time < lerpPoint; time = time + 20_ms) {
+      units::radian_t lerpResult{std::lerp(startAngle.to<double>(), goalAngle.to<double>(), time.to<double>() / lerpPoint.to<double>())};
+      frc::Rotation2d rotVal{lerpResult};
+      retVal.push_back(rotVal);
     }
-    currentTime += 20_ms;
-    counter++;
-    std::cout << "--------------\n";
-  }
-
-  units::second_t printTime = 0_s;
-  for(int i = 0; i < retVal.size(); i++) {
-    std::cout << "Time: " << printTime.to<double>() << " Rotation: " << retVal[i].Degrees().to<double>() << "\n";
-    printTime += 20_ms;
+    startAngle = goalAngle;
+    targetIndex++;
+    if(targetIndex > allPoses.size() - 1) {
+      break;
+    }
+    goalAngle = allPoses[targetIndex].Rotation().Radians();
   }
 
   return retVal;
@@ -170,7 +151,7 @@ frc2::CommandPtr DrivebaseSubsystem::FollowPathFactory(
   std::vector rotationValues = CreateRotationVectorForPath(allPoses, trajectory);
 
   str::Field::GetInstance().DrawTraj("Auto Path", trajectory);
-  frc2::SwerveControllerCommand<4> controllerCmd(
+  frc2::BetterSwerveControllerCommand<4> controllerCmd(
     trajectory,
     [this]() {
       return swerveDrivebase.GetRobotPose();
@@ -184,6 +165,7 @@ frc2::CommandPtr DrivebaseSubsystem::FollowPathFactory(
       0,
       str::swerve_drive_consts::GLOBAL_THETA_CONTROLLER_CONSTRAINTS},
     [this, rotationValues] {
+      std::cout << "Index: " << index << "\n";
       return rotationValues[index++]; 
     },
     [this](auto states) {

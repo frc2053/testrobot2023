@@ -37,7 +37,7 @@ private:
     frc::Trajectory trajectory
   );
   bool CompareTranslations(const frc::Translation2d& trans1, const frc::Translation2d& trans2);
-  std::vector<int> FindIndicesOfSwitchingRotation(const frc::Trajectory& traj, std::vector<frc::Pose2d> pointsToFind);
+  std::vector<units::second_t> FindTimeOfSwitchingRotation(const frc::Trajectory& traj, std::vector<frc::Pose2d> pointsToFind);
   // str::DiffDrivebase diffDrivebase{};
   str::SwerveDrivebase swerveDrivebase{};
   int index{0};
