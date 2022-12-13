@@ -1,7 +1,7 @@
 #pragma once
 
 #include <units/angular_velocity.h>
-#include <frc/geometry/Transform2d.h>
+#include <frc/geometry/Transform3d.h>
 
 namespace str {
   namespace encoder_cprs {
@@ -17,7 +17,7 @@ namespace str {
   }
 
   namespace vision {
-    static constexpr frc::Transform2d CAMERA_TO_ROBOT{frc::Translation2d{5_in, 5_in}, frc::Rotation2d{0_deg}};
+    static frc::Transform3d CAMERA_TO_ROBOT{frc::Translation3d{0_in, 0_in, 0_in}, frc::Rotation3d{}};
     static constexpr std::string_view TAG_LAYOUT_FILENAME{"2022-rapidreact.json"};
   }
 }

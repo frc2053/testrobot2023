@@ -71,11 +71,11 @@ frc2::CommandPtr SwerveCommandRobot::GetAutonomousCommand() {
   return driveSubsystem.FollowPathFactory(
     15_fps,
     200_mps_sq,
-    frc::Pose2d{0_ft, 0_ft, 0_rad},
+    frc::Pose2d{0_ft, 10_ft, 0_rad},
     {
-      frc::Pose2d{3_m, 0_ft, 180_deg},
+      frc::Pose2d{3_m, 10_ft, -90_deg},
     },
-    frc::Pose2d{6_m, 0_ft, 0_deg},
+    frc::Pose2d{6_m, 10_ft, 180_deg},
     false
   );
 }

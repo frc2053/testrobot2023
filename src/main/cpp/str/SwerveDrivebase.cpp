@@ -28,6 +28,10 @@ frc::SwerveDriveKinematics<4>& str::SwerveDrivebase::GetKinematics() {
   return kinematics;
 }
 
+void str::SwerveDrivebase::AddVisionMeasurementToPoseEstimator(frc::Pose2d visionMeasuredRobotPose, units::second_t timeStampWhenPicWasTaken) {
+  estimator.AddVisionMeasurement(visionMeasuredRobotPose, timeStampWhenPicWasTaken);
+}
+
 void str::SwerveDrivebase::Drive(
   units::meters_per_second_t xSpeed,
   units::meters_per_second_t ySpeed,

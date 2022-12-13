@@ -8,6 +8,8 @@
 #include <frc2/command/SubsystemBase.h>
 #include <functional>
 #include <frc/trajectory/Trajectory.h>
+#include <frc/apriltag/AprilTagFieldLayout.h>
+#include <photonlib/SimVisionSystem.h>
 
 class DrivebaseSubsystem : public frc2::SubsystemBase {
 public:
@@ -41,4 +43,9 @@ private:
   // str::DiffDrivebase diffDrivebase{};
   str::SwerveDrivebase swerveDrivebase{};
   int index{0};
+
+  frc::AprilTagFieldLayout tagLayout;
+  photonlib::PhotonCamera camera{"photonvision"};
+  photonlib::SimVisionSystem system{"photonvision", 100_deg, frc::Transform3d{}, 9999_m, 1280, 720, 20};
+  std::vector<int> tagIdList = {0, 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 15, 16, 17, 40, 41, 42, 43, 50, 51, 52, 53};
 };

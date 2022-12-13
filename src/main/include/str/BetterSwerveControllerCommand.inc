@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "str/BetterSwerveControllerCommand.h"
+#include <iostream>
 
 namespace frc2 {
 
@@ -95,6 +96,8 @@ void BetterSwerveControllerCommand<NumModules>::Execute() {
   auto curTime = m_timer.Get();
   auto m_desiredState = m_trajectory.Sample(curTime);
 
+  std::cout << curTime.to<double>() << "\n";
+
   auto targetChassisSpeeds =
       m_controller.Calculate(m_pose(), m_desiredState, m_desiredRotation());
   auto targetModuleStates =
@@ -110,8 +113,7 @@ void BetterSwerveControllerCommand<NumModules>::End(bool interrupted) {
 
 template <size_t NumModules>
 bool BetterSwerveControllerCommand<NumModules>::IsFinished() {
-  return false;
-  //return m_timer.HasElapsed(m_trajectory.TotalTime());
+  return m_timer.HasElapsed(m_trajectory.TotalTime());
 }
 
 }  // namespace frc2

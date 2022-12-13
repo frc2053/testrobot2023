@@ -2,7 +2,8 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/SmartDashboard/Field": "Field2d"
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/photonvision Sim Field": "Field2d"
     },
     "windows": {
       "/SmartDashboard/Field": {
@@ -56,6 +57,103 @@
             255.0
           ]
         },
+        "tag-0": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-1": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-10": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-11": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-12": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-13": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-14": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-15": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-16": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-17": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-2": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-3": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-4": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-40": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-41": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-42": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-43": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-5": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-50": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-51": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-52": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-53": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-6": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "tag-7": {
+          "arrowSize": 11,
+          "style": "Hidden"
+        },
+        "units": "meters",
         "window": {
           "visible": true
         }
@@ -77,7 +175,16 @@
         "ResetPose": {
           "open": true
         },
-        "open": true
+        "open": true,
+        "photonvision Sim Field": {
+          "open": true
+        }
+      },
+      "photonvision": {
+        "open": true,
+        "photonvision": {
+          "open": true
+        }
       }
     }
   },

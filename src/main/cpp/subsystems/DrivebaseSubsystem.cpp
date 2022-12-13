@@ -10,13 +10,35 @@
 #include <units/length.h>
 #include <cmath>
 #include <iostream>
+#include <frc/Filesystem.h>
+#include "Constants.h"
+#include "frc/ComputerVisionUtil.h"
 
-DrivebaseSubsystem::DrivebaseSubsystem() {
+DrivebaseSubsystem::DrivebaseSubsystem() : tagLayout{frc::filesystem::GetDeployDirectory()  + "\\" + std::string{str::vision::TAG_LAYOUT_FILENAME}}{
+  for(const int& tagId : tagIdList) {
+    frc::Pose3d tagPose = tagLayout.GetTagPose(tagId).value();
+    str::Field::GetInstance().SetObjectPosition("tag-" + std::to_string(tagId), tagPose.ToPose2d());
+    system.AddSimVisionTarget(photonlib::SimVisionTarget{tagPose, 6_in, 6_in, tagId});
+  }
 }
 
 void DrivebaseSubsystem::Periodic() {
   // diffDrivebase.Periodic();
   swerveDrivebase.Periodic();
+
+  system.ProcessFrame(swerveDrivebase.GetRobotPose());
+  photonlib::PhotonPipelineResult result = camera.GetLatestResult();
+  bool hasTargets = result.HasTargets();
+  if(hasTargets) {
+    auto targets = result.GetTargets();
+    for(const auto& target : targets) {
+      frc::Transform3d bestCameraToTarget = target.GetBestCameraToTarget();
+      int aprilTagId = target.GetFiducialId();
+      frc::Pose3d tagPose = tagLayout.GetTagPose(aprilTagId).value();
+      frc::Pose3d estimatedRobotPose = frc::ObjectToRobotPose(tagPose, bestCameraToTarget, str::vision::CAMERA_TO_ROBOT);
+      swerveDrivebase.AddVisionMeasurementToPoseEstimator(estimatedRobotPose.ToPose2d(), result.GetTimestamp());
+    }
+  }
 }
 
 void DrivebaseSubsystem::SimulationPeriodic() {
@@ -164,10 +186,10 @@ frc2::CommandPtr DrivebaseSubsystem::FollowPathFactory(
       0,
       0,
       str::swerve_drive_consts::GLOBAL_THETA_CONTROLLER_CONSTRAINTS},
-    [this, rotationValues] {
-      std::cout << "Index: " << index << "\n";
-      return rotationValues[index++]; 
-    },
+    // [this, rotationValues] {
+    //   std::cout << "Index: " << index << "\n";
+    //   return rotationValues[index++]; 
+    // },
     [this](auto states) {
       swerveDrivebase.DirectSetModuleStates(states[0], states[1], states[2], states[3]);
     },
@@ -176,6 +198,7 @@ frc2::CommandPtr DrivebaseSubsystem::FollowPathFactory(
   return frc2::SequentialCommandGroup(
     frc2::InstantCommand(
       [this, trajectory]() {
+        index = 0;
         swerveDrivebase.ResetPose(trajectory.InitialPose());
       },
       {}

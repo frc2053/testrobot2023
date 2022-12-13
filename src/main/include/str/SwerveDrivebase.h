@@ -37,6 +37,7 @@ namespace str {
       frc::SwerveModuleState br
     );
     frc::SwerveDriveKinematics<4>& GetKinematics();
+    void AddVisionMeasurementToPoseEstimator(frc::Pose2d visionMeasuredRobotPose, units::second_t timeStampWhenPicWasTaken);
 
   private:
     str::IMU imu{};
