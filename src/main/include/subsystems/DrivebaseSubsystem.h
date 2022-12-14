@@ -1,13 +1,9 @@
 #pragma once
 
-#include "frc/EigenCore.h"
 #include "str/DiffDrivebase.h"
 #include "str/SwerveDrivebase.h"
-#include <frc/controller/LinearQuadraticRegulator.h>
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/SubsystemBase.h>
-#include <functional>
-#include <frc/trajectory/Trajectory.h>
 #include <frc/apriltag/AprilTagFieldLayout.h>
 #include <photonlib/SimVisionSystem.h>
 
@@ -34,6 +30,7 @@ public:
     std::function<double()> rot_deg
   );
   bool CompareTranslations(const frc::Translation2d& trans1, const frc::Translation2d& trans2);
+  void ProcessVisionData();
 private:
   // str::DiffDrivebase diffDrivebase{};
   str::SwerveDrivebase swerveDrivebase{};

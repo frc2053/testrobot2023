@@ -5,7 +5,6 @@
 #include <ctre/phoenix/motorcontrol/can/WPI_TalonFX.h>
 #include <frc/Timer.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
-#include <frc/geometry/Translation2d.h>
 #include <frc/kinematics/SwerveModulePosition.h>
 #include <frc/kinematics/SwerveModuleState.h>
 

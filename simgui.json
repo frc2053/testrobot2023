@@ -175,6 +175,9 @@
     },
     "transitory": {
       "SmartDashboard": {
+        "AdvantageScope": {
+          "open": true
+        },
         "open": true
       },
       "photonvision": {

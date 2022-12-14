@@ -1,6 +1,5 @@
 #include "subsystems/DrivebaseSubsystem.h"
 #include "str/Field.h"
-#include <ctre/phoenix/motorcontrol/can/TalonFX.h>
 #include <frc/trajectory/TrajectoryConfig.h>
 #include <frc/trajectory/TrajectoryGenerator.h>
 #include <frc2/command/InstantCommand.h>
@@ -15,20 +14,33 @@
 #include "frc/ComputerVisionUtil.h"
 
 DrivebaseSubsystem::DrivebaseSubsystem() : tagLayout{frc::filesystem::GetDeployDirectory()  + "\\" + std::string{str::vision::TAG_LAYOUT_FILENAME}}{
+  std::vector<double> allAprilTagDataForNt{};
   for(const int& tagId : tagIdList) {
     frc::Pose3d tagPose = tagLayout.GetTagPose(tagId).value();
     str::Field::GetInstance().SetObjectPosition("tag-" + std::to_string(tagId), tagPose.ToPose2d());
     system.AddSimVisionTarget(photonlib::SimVisionTarget{tagPose, 6_in, 6_in, tagId});
+    allAprilTagDataForNt.push_back(tagPose.X().to<double>());
+    allAprilTagDataForNt.push_back(tagPose.Y().to<double>());
+    allAprilTagDataForNt.push_back(tagPose.Z().to<double>());
+    allAprilTagDataForNt.push_back(tagPose.Rotation().GetQuaternion().W());
+    allAprilTagDataForNt.push_back(tagPose.Rotation().GetQuaternion().X());
+    allAprilTagDataForNt.push_back(tagPose.Rotation().GetQuaternion().Y());
+    allAprilTagDataForNt.push_back(tagPose.Rotation().GetQuaternion().Z());
   }
+  frc::SmartDashboard::PutNumberArray("AdvantageScope/All Vision Targets", allAprilTagDataForNt);
 }
 
 void DrivebaseSubsystem::Periodic() {
   // diffDrivebase.Periodic();
   swerveDrivebase.Periodic();
+  ProcessVisionData();
+}
 
+void DrivebaseSubsystem::ProcessVisionData() {
   system.ProcessFrame(swerveDrivebase.GetRobotPose());
   photonlib::PhotonPipelineResult result = camera.GetLatestResult();
   bool hasTargets = result.HasTargets();
+  std::vector<double> detectedVisionDataForNt{};
   if(hasTargets) {
     auto targets = result.GetTargets();
     for(const auto& target : targets) {
@@ -37,8 +49,16 @@ void DrivebaseSubsystem::Periodic() {
       frc::Pose3d tagPose = tagLayout.GetTagPose(aprilTagId).value();
       frc::Pose3d estimatedRobotPose = frc::ObjectToRobotPose(tagPose, bestCameraToTarget, str::vision::CAMERA_TO_ROBOT);
       swerveDrivebase.AddVisionMeasurementToPoseEstimator(estimatedRobotPose.ToPose2d(), result.GetTimestamp());
+      detectedVisionDataForNt.push_back(tagPose.X().to<double>());
+      detectedVisionDataForNt.push_back(tagPose.Y().to<double>()); 
+      detectedVisionDataForNt.push_back(tagPose.Z().to<double>()); 
+      detectedVisionDataForNt.push_back(tagPose.Rotation().GetQuaternion().W());
+      detectedVisionDataForNt.push_back(tagPose.Rotation().GetQuaternion().X());
+      detectedVisionDataForNt.push_back(tagPose.Rotation().GetQuaternion().Y());
+      detectedVisionDataForNt.push_back(tagPose.Rotation().GetQuaternion().Z());
     }
   }
+  frc::SmartDashboard::PutNumberArray("AdvantageScope/Detected Vision Targets", detectedVisionDataForNt);
 }
 
 void DrivebaseSubsystem::SimulationPeriodic() {

@@ -11,7 +11,6 @@
 #include <frc/geometry/Translation2d.h>
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/SwerveDriveOdometry.h>
-#include <units/velocity.h>
 
 namespace str {
   class SwerveDrivebase {

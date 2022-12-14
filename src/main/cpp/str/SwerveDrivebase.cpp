@@ -69,7 +69,7 @@ void str::SwerveDrivebase::Drive(
   desiredModuleDataForNT[6] = br.angle.Radians().to<double>();
   desiredModuleDataForNT[7] = br.speed.convert<units::feet_per_second>().to<double>();
 
-  frc::SmartDashboard::PutNumberArray("Desired Swerve Module Data", desiredModuleDataForNT);
+  frc::SmartDashboard::PutNumberArray("AdvantageScope/Desired Swerve Module Data", desiredModuleDataForNT);
 
   flModule.SetDesiredState(fl, openLoopDrive, voltageComp);
   frModule.SetDesiredState(fr, openLoopDrive, voltageComp);
@@ -162,8 +162,8 @@ void str::SwerveDrivebase::Periodic() {
   currentEstimatorPoseForNT[1] = estimatorPose.Y().to<double>();
   currentEstimatorPoseForNT[2] = estimatorPose.Rotation().Radians().to<double>();
 
-  frc::SmartDashboard::PutNumberArray("Robot Estimator Pose", currentEstimatorPoseForNT);
-  frc::SmartDashboard::PutNumberArray("Current Swerve Module Data", currentModuleDataForNT);
+  frc::SmartDashboard::PutNumberArray("AdvantageScope/Robot Estimator Pose", currentEstimatorPoseForNT);
+  frc::SmartDashboard::PutNumberArray("AdvantageScope/Current Swerve Module Data", currentModuleDataForNT);
 }
 
 void str::SwerveDrivebase::SimulationPeriodic() {
