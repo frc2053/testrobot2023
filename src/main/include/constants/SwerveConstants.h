@@ -33,7 +33,7 @@ namespace str {
     static constexpr double DRIVE_KD = 0;
 
     static constexpr auto DRIVE_KS = 0.46814_V;
-    static constexpr auto DRIVE_KV = 2.4253 * 1_V / 1_mps;
+    static constexpr auto DRIVE_KV = 5 * 1_V / 1_mps;
     static constexpr auto DRIVE_KA = 0.12445 * 1_V / 1_mps_sq;
 
     static constexpr auto GLOBAL_POSE_TRANS_KP = 10.0;

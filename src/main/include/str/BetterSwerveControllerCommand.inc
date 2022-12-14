@@ -89,14 +89,13 @@ void BetterSwerveControllerCommand<NumModules>::Initialize() {
   }
   m_timer.Reset();
   m_timer.Start();
+  m_controller.SetTolerance(frc::Pose2d{frc::Translation2d{2_in, 2_in}, frc::Rotation2d{2_deg}});
 }
 
 template <size_t NumModules>
 void BetterSwerveControllerCommand<NumModules>::Execute() {
   auto curTime = m_timer.Get();
   auto m_desiredState = m_trajectory.Sample(curTime);
-
-  std::cout << curTime.to<double>() << "\n";
 
   auto targetChassisSpeeds =
       m_controller.Calculate(m_pose(), m_desiredState, m_desiredRotation());
@@ -113,7 +112,22 @@ void BetterSwerveControllerCommand<NumModules>::End(bool interrupted) {
 
 template <size_t NumModules>
 bool BetterSwerveControllerCommand<NumModules>::IsFinished() {
-  return m_timer.HasElapsed(m_trajectory.TotalTime());
+  frc::Pose2d endPose = m_trajectory.States().back().pose;
+  frc::Pose2d currentPose = m_pose();
+
+  bool atLastPoint = units::math::abs(currentPose.X() - endPose.X()) < 2_in && 
+    units::math::abs(currentPose.Y() - endPose.Y()) < 2_in && 
+    units::math::abs(currentPose.Rotation().Degrees() - endPose.Rotation().Degrees()) < 2_deg;
+
+  bool atSetpoint = m_controller.AtReference();
+
+  bool timeElapsed = m_timer.HasElapsed(m_trajectory.TotalTime());
+
+  std::cout << "atLastPoint: " << atLastPoint << "\n";
+  std::cout << "atSetpoint: " << atSetpoint << "\n";
+  std::cout << "timeElapsed: " << timeElapsed << "\n";
+
+  return atLastPoint && atSetpoint && timeElapsed;
 }
 
 }  // namespace frc2

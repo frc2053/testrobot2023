@@ -9,7 +9,7 @@
 #include <span>
 
 #include <frc/Timer.h>
-#include <frc/controller/HolonomicDriveController.h>
+#include <str/BetterHolonomicDriveController.h>
 #include <frc/controller/PIDController.h>
 #include <frc/controller/ProfiledPIDController.h>
 #include <frc/geometry/Pose2d.h>
@@ -221,7 +221,7 @@ class BetterSwerveControllerCommand
   frc::Trajectory m_trajectory;
   std::function<frc::Pose2d()> m_pose;
   frc::SwerveDriveKinematics<NumModules> m_kinematics;
-  frc::HolonomicDriveController m_controller;
+  frc::BetterHolonomicDriveController m_controller;
   std::function<void(std::array<frc::SwerveModuleState, NumModules>)>
       m_outputStates;
 

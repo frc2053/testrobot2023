@@ -1,4 +1,13 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "Talon FX[2]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -166,22 +175,9 @@
     },
     "transitory": {
       "SmartDashboard": {
-        "IMU": {
-          "open": true
-        },
-        "Reset Drivetrain Pose": {
-          "open": true
-        },
-        "ResetPose": {
-          "open": true
-        },
-        "open": true,
-        "photonvision Sim Field": {
-          "open": true
-        }
+        "open": true
       },
       "photonvision": {
-        "open": true,
         "photonvision": {
           "open": true
         }

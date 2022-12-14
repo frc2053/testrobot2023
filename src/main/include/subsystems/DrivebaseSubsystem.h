@@ -34,15 +34,8 @@ public:
     std::function<double()> rot_deg
   );
 private:
-  std::vector<frc::Rotation2d> CreateRotationVectorForPath(
-    std::vector<frc::Pose2d> allPoses,
-    frc::Trajectory trajectory
-  );
-  bool CompareTranslations(const frc::Translation2d& trans1, const frc::Translation2d& trans2);
-  std::vector<units::second_t> FindTimeOfSwitchingRotation(const frc::Trajectory& traj, std::vector<frc::Pose2d> pointsToFind);
   // str::DiffDrivebase diffDrivebase{};
   str::SwerveDrivebase swerveDrivebase{};
-  int index{0};
 
   frc::AprilTagFieldLayout tagLayout;
   photonlib::PhotonCamera camera{"photonvision"};
