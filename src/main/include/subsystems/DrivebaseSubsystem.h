@@ -33,9 +33,13 @@ public:
     std::function<double()> y_ft,
     std::function<double()> rot_deg
   );
+  bool CompareTranslations(const frc::Translation2d& trans1, const frc::Translation2d& trans2);
 private:
   // str::DiffDrivebase diffDrivebase{};
   str::SwerveDrivebase swerveDrivebase{};
+
+  std::vector<frc::Pose2d> posesToPassThrough{};
+  int index{0};
 
   frc::AprilTagFieldLayout tagLayout;
   photonlib::PhotonCamera camera{"photonvision"};

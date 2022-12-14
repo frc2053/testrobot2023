@@ -95,6 +95,10 @@ frc2::CommandPtr DrivebaseSubsystem::ResetOdomFactory(
     .ToPtr();
 }
 
+bool DrivebaseSubsystem::CompareTranslations(const frc::Translation2d& trans1, const frc::Translation2d& trans2) {
+  return units::math::abs(trans1.X() - trans2.X()) <= 2_in && units::math::abs(trans1.Y() - trans2.Y()) <= 2_in;
+}
+
 frc2::CommandPtr DrivebaseSubsystem::FollowPathFactory(
   units::meters_per_second_t maxSpeed,
   units::meters_per_second_squared_t maxAccel,
@@ -112,6 +116,12 @@ frc2::CommandPtr DrivebaseSubsystem::FollowPathFactory(
     trajectory = trajectory.RelativeTo(frc::Pose2d(frc::Translation2d(54_ft, 27_ft), frc::Rotation2d(180_deg)));
   }
 
+  posesToPassThrough.push_back(startPose);
+  for(const auto& middle : middlePoints) {
+    posesToPassThrough.push_back(middle);
+  }
+  posesToPassThrough.push_back(endPose);
+
   str::Field::GetInstance().DrawTraj("Auto Path", trajectory);
   frc2::BetterSwerveControllerCommand<4> controllerCmd(
     trajectory,
@@ -126,9 +136,13 @@ frc2::CommandPtr DrivebaseSubsystem::FollowPathFactory(
       0,
       0,
       str::swerve_drive_consts::GLOBAL_THETA_CONTROLLER_CONSTRAINTS},
-    // [trajectory]() {
-    //   trajectory.
-    // },
+    [this]() {
+      if(CompareTranslations(swerveDrivebase.GetRobotPose().Translation(), posesToPassThrough[index].Translation())) {
+        index++;
+      }
+      std::cout << "posesToPassThrough[index].Rotation(): " << posesToPassThrough[index].Rotation().Degrees().to<double>() << "\n";
+      return posesToPassThrough[index].Rotation();
+    },
     [this](auto states) {
       swerveDrivebase.DirectSetModuleStates(states[0], states[1], states[2], states[3]);
     },

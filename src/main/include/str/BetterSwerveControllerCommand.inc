@@ -123,9 +123,9 @@ bool BetterSwerveControllerCommand<NumModules>::IsFinished() {
 
   bool timeElapsed = m_timer.HasElapsed(m_trajectory.TotalTime());
 
-  std::cout << "atLastPoint: " << atLastPoint << "\n";
-  std::cout << "atSetpoint: " << atSetpoint << "\n";
-  std::cout << "timeElapsed: " << timeElapsed << "\n";
+  // std::cout << "atLastPoint: " << atLastPoint << "\n";
+  // std::cout << "atSetpoint: " << atSetpoint << "\n";
+  // std::cout << "timeElapsed: " << timeElapsed << "\n";
 
   return atLastPoint && atSetpoint && timeElapsed;
 }
