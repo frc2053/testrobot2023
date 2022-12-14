@@ -96,7 +96,7 @@ frc2::CommandPtr DrivebaseSubsystem::ResetOdomFactory(
 }
 
 bool DrivebaseSubsystem::CompareTranslations(const frc::Translation2d& trans1, const frc::Translation2d& trans2) {
-  return units::math::abs(trans1.X() - trans2.X()) <= 2_in && units::math::abs(trans1.Y() - trans2.Y()) <= 2_in;
+  return units::math::abs(trans1.X() - trans2.X()) <= 12_in && units::math::abs(trans1.Y() - trans2.Y()) <= 12_in;
 }
 
 frc2::CommandPtr DrivebaseSubsystem::FollowPathFactory(
@@ -138,7 +138,9 @@ frc2::CommandPtr DrivebaseSubsystem::FollowPathFactory(
       str::swerve_drive_consts::GLOBAL_THETA_CONTROLLER_CONSTRAINTS},
     [this]() {
       if(CompareTranslations(swerveDrivebase.GetRobotPose().Translation(), posesToPassThrough[index].Translation())) {
-        index++;
+        if(index + 1 < posesToPassThrough.size()) {
+          index++;
+        }
       }
       std::cout << "posesToPassThrough[index].Rotation(): " << posesToPassThrough[index].Rotation().Degrees().to<double>() << "\n";
       return posesToPassThrough[index].Rotation();
@@ -158,6 +160,8 @@ frc2::CommandPtr DrivebaseSubsystem::FollowPathFactory(
     std::move(controllerCmd),
     frc2::InstantCommand(
       [this]() {
+        posesToPassThrough.clear();
+        index = 0;
         swerveDrivebase.Drive(0_mps, 0_mps, 0_rad_per_s, false, false, true);
       },
       {}
