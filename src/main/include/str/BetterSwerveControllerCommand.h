@@ -222,10 +222,10 @@ class BetterSwerveControllerCommand
   std::function<frc::Pose2d()> m_pose;
   frc::SwerveDriveKinematics<NumModules> m_kinematics;
   frc::BetterHolonomicDriveController m_controller;
+  std::function<frc::Rotation2d()> m_desiredRotation;
   std::function<void(std::array<frc::SwerveModuleState, NumModules>)>
       m_outputStates;
 
-  std::function<frc::Rotation2d()> m_desiredRotation;
 
   frc::Timer m_timer;
   units::second_t m_prevTime;

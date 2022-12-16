@@ -36,7 +36,7 @@ private:
   str::SwerveDrivebase swerveDrivebase{};
 
   std::vector<frc::Pose2d> posesToPassThrough{};
-  int index{0};
+  size_t index{0};
 
   frc::AprilTagFieldLayout tagLayout;
   photonlib::PhotonCamera camera{"photonvision"};
