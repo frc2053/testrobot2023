@@ -13,10 +13,12 @@ namespace str {
     void SetSimSensorPosition(double position);
     void SetSimSensorVelocity(double velocity);
     void SetSimAppliedOutput(double output);
+    void SetSimBusVoltage(double voltage);
     void Update();
     void SetReference(double ref);
     double GetPosition();
     double GetVelocity();
+    void SetSimCurrent(double current);
 
   private:
     std::unique_ptr<rev::SparkMaxPIDController> pidController;
@@ -25,8 +27,10 @@ namespace str {
     hal::SimDouble motorSimPosition;
     hal::SimDouble motorSimVelocity;
     hal::SimDouble motorOutput;
+    hal::SimDouble motorBusVoltage;
     hal::SimDouble velocityConversionFactor;
     hal::SimDouble positionConversionFactor;
+    hal::SimDouble motorCurrent;
     frc2::PIDController fakePid;
   };
 }   

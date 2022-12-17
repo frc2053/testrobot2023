@@ -4,6 +4,8 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 #include <iostream>
+#include <frc/simulation/RoboRioSim.h>
+
 
 void Robot::RobotInit() {
   std::cout << std::boolalpha;
@@ -14,6 +16,9 @@ void Robot::RobotInit() {
 
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
+  units::volt_t totalVolts = str::PDP::GetInstance().GetBatteryVoltageWithLoad();
+  frc::sim::RoboRioSim::SetVInVoltage(totalVolts);
+  str::PDP::GetInstance().SetInputVoltage(totalVolts);
 }
 
 void Robot::DisabledInit() {

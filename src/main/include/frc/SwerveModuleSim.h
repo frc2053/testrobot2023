@@ -51,6 +51,14 @@ namespace frc {
       return driveMotor.GetVelocity() * driveMotorToOutputGearboxRatio;
     };
 
+    units::ampere_t GetDriveCurrent() {
+      return driveMotor.GetCurrentDraw();
+    }
+
+    units::ampere_t GetSteerCurrent() {
+      return steerMotor.GetCurrentDraw();
+    }
+
     void Reset(frc::Pose2d initPose) {
       prevModulePose = initPose;
       currentModulePose = initPose;

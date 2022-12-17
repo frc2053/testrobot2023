@@ -23,6 +23,14 @@ units::volt_t str::SwerveModule::GetRotationAppliedVoltage() {
   return units::volt_t{steerMotor.GetAppliedOutput() * steerMotor.GetBusVoltage()};
 }
 
+units::ampere_t str::SwerveModule::GetDriveMotorCurrent() {
+  return units::ampere_t{driveMotorController.GetSupplyCurrent()};
+}
+
+units::ampere_t str::SwerveModule::GetSteerMotorCurrent() {
+  return units::ampere_t{steerMotor.GetOutputCurrent()};
+}
+
 void str::SwerveModule::SimulationPeriodic() {
   steerMotor.Update();
 }
@@ -30,8 +38,12 @@ void str::SwerveModule::SimulationPeriodic() {
 void str::SwerveModule::SetSimState(
   units::radian_t steerPos,
   units::meter_t drivePos,
-  units::radians_per_second_t driveVel
+  units::radians_per_second_t driveVel,
+  units::ampere_t driveCurrent,
+  units::ampere_t steerCurrent
 ) {
+  driveMotorSim.SetSupplyCurrent(driveCurrent.to<double>());
+  steerMotor.SetSimCurrent(steerCurrent.to<double>());
   driveMotorSim.SetIntegratedSensorRawPosition(str::Units::ConvertDistanceToEncoderTicks(
     drivePos,
     str::encoder_cprs::FALCON_CPR,
@@ -44,6 +56,7 @@ void str::SwerveModule::SetSimState(
     str::swerve_physical_dims::DRIVE_GEARBOX_RATIO
   ));
   driveMotorSim.SetBusVoltage(frc::RobotController::GetBatteryVoltage().to<double>());
+  steerMotor.SetSimBusVoltage(frc::RobotController::GetBatteryVoltage().to<double>());
   steerMotor.SetSimSensorPosition(steerPos.to<double>());
 }
 

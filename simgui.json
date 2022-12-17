@@ -1,6 +1,11 @@
 {
   "HALProvider": {
     "Other Devices": {
+      "SPARK MAX [3]": {
+        "header": {
+          "open": true
+        }
+      },
       "Talon FX[2]": {
         "header": {
           "open": true
@@ -66,6 +71,11 @@
             255.0
           ]
         },
+        "bottom": 900,
+        "height": 8.229599952697754,
+        "image": "C:\\Users\\willi\\Downloads\\2022-field.png",
+        "left": 74,
+        "right": 1774,
         "tag-0": {
           "arrowSize": 11,
           "style": "Hidden"
@@ -162,7 +172,9 @@
           "arrowSize": 11,
           "style": "Hidden"
         },
+        "top": 50,
         "units": "meters",
+        "width": 16.459199905395508,
         "window": {
           "visible": true
         }

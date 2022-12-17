@@ -16,6 +16,8 @@ str::SparkMaxSwerveWrapper::SparkMaxSwerveWrapper(int canId) :
     motorOutput = HALSIM_GetSimValueHandle(motorSim, "Applied Output");
     velocityConversionFactor = HALSIM_GetSimValueHandle(motorSim, "Velocity Conversion Factor");
     positionConversionFactor = HALSIM_GetSimValueHandle(motorSim, "Position Conversion Factor");
+    motorCurrent = HALSIM_GetSimValueHandle(motorSim, "Motor Current");
+    motorBusVoltage = HALSIM_GetSimValueHandle(motorSim, "Bus Voltage");
   } else {
     motorSim = -1;
     motorSimPosition = -1;
@@ -23,6 +25,8 @@ str::SparkMaxSwerveWrapper::SparkMaxSwerveWrapper(int canId) :
     motorOutput = -1;
     velocityConversionFactor = -1;
     positionConversionFactor = -1;
+    motorCurrent = -1;
+    motorBusVoltage = -1;
   }
   pidController = std::make_unique<rev::SparkMaxPIDController>(this->GetPIDController());
   encoder = std::make_unique<rev::SparkMaxRelativeEncoder>(this->GetEncoder());
@@ -61,6 +65,9 @@ double str::SparkMaxSwerveWrapper::GetPosition() {
 double str::SparkMaxSwerveWrapper::GetVelocity() {
   return encoder->GetVelocity();
 }
+void str::SparkMaxSwerveWrapper::SetSimCurrent(double current) {
+  motorCurrent.Set(current);
+}
 
 void str::SparkMaxSwerveWrapper::SetSimSensorPosition(double position) {
   encoder->SetPosition(position);
@@ -71,4 +78,8 @@ void str::SparkMaxSwerveWrapper::SetSimSensorVelocity(double velocity) {
 }
 void str::SparkMaxSwerveWrapper::SetSimAppliedOutput(double output) {
   motorOutput.Set(output);
+}
+
+void str::SparkMaxSwerveWrapper::SetSimBusVoltage(double voltage) {
+  motorBusVoltage.Set(voltage);
 }

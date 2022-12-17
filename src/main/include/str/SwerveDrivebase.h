@@ -39,6 +39,9 @@ namespace str {
     void AddVisionMeasurementToPoseEstimator(frc::Pose2d visionMeasuredRobotPose, units::second_t timeStampWhenPicWasTaken);
 
   private:
+    void LogCurrentModuleInfo(std::array<frc::SwerveModuleState, 4> moduleStates);
+    void LogDesiredModuleInfo(frc::SwerveModuleState flState, frc::SwerveModuleState frState, frc::SwerveModuleState blState, frc::SwerveModuleState brState);
+
     str::IMU imu{};
 
     frc::Translation2d flLocation{
@@ -107,7 +110,6 @@ namespace str {
     };
 
     std::array<double, 8> currentModuleDataForNT{};
-    std::array<double, 8> desiredModuleDataForNT{};
     std::array<double, 3> currentEstimatorPoseForNT{};
   };
 }   

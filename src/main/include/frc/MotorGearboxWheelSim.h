@@ -4,6 +4,7 @@
 #include <frc/system/plant/DCMotor.h>
 #include <units/length.h>
 #include <units/velocity.h>
+#include <units/current.h>
 
 using frictionCoefUnit = units::compound_unit<units::newton_meter, units::inverse<units::radians_per_second>>;
 
@@ -19,6 +20,7 @@ namespace frc {
     units::radians_per_second_t prevWheelRotationSpeed;
     units::revolutions_per_minute_t wheelSpeed;
     units::revolutions_per_minute_t motorSpeed;
+    units::ampere_t motorCurrent;
     MotorGearboxWheelSim(
       DCMotor motorIn,
       units::scalar_t gearRatioIn,
@@ -34,7 +36,8 @@ namespace frc {
     void Update(units::meters_per_second_t groundVelocity, units::volt_t motorVoltage, units::second_t dt) {
       units::radians_per_second_t wheelRotationalSpeed = str::Units::ConvertLinearVelocityToAngularVelocity(groundVelocity, wheelRadius);
       units::radians_per_second_t motorRotationalSpeed = wheelRotationalSpeed * gearRatio;
-      units::newton_meter_t motorTorqueNm = motor.Kt * motor.Current(motorRotationalSpeed, motorVoltage);
+      motorCurrent = motor.Current(motorRotationalSpeed, motorVoltage);
+      units::newton_meter_t motorTorqueNm = motor.Kt * motorCurrent;
       units::newton_meter_t gearboxFrictionalTorque = units::newton_meter_t{motorRotationalSpeed * gearboxFrictionCoefNmPerRadPerSec};
       units::newton_meter_t currentWheelTorque = motorTorqueNm * gearRatio - gearboxFrictionalTorque;
       groundForce = currentWheelTorque / wheelRadius / 2;
@@ -51,6 +54,9 @@ namespace frc {
     }
     units::newton_t GetGroundForce() {
       return groundForce;
+    }
+    units::ampere_t GetCurrentDraw() {
+      return motorCurrent;
     }
 
   private:

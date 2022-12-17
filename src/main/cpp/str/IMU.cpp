@@ -66,26 +66,26 @@ void str::IMU::SetOffset(units::radian_t offset) {
 void str::IMU::InitSendable(wpi::SendableBuilder& builder) {
   builder.SetSmartDashboardType("IMU");
   builder.AddDoubleProperty(
-    "imu_yaw_rads",
+    "imu_yaw_deg",
     [this] {
-      return GetYaw().Radians().to<double>();
+      return GetYaw().Degrees().to<double>();
     },
     nullptr
   );
   builder.AddDoubleProperty(
-    "imu_rate_radpers",
+    "imu_rate_degpers",
     [this] {
-      return GetYawRate().to<double>();
+      return GetYawRate().convert<units::degrees_per_second>().to<double>();
     },
     nullptr
   );
   builder.AddDoubleProperty(
-    "imu_offset_rad",
+    "imu_offset_deg",
     [this] {
-      return GetOffset().to<double>();
+      return GetOffset().convert<units::degree>().to<double>();
     },
     [this](double newOffset) {
-      SetOffset(units::radian_t(newOffset));
+      SetOffset(units::degree_t(newOffset));
     }
   );
   builder.AddBooleanProperty(

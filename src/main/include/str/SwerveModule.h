@@ -18,8 +18,10 @@ namespace str {
     void ResetEncoders();
     units::volt_t GetDriveAppliedVoltage();
     units::volt_t GetRotationAppliedVoltage();
-    void SetSimState(units::radian_t steerPos, units::meter_t drivePos, units::radians_per_second_t driveVel);
+    void SetSimState(units::radian_t steerPos, units::meter_t drivePos, units::radians_per_second_t driveVel, units::ampere_t driveCurrent, units::ampere_t steerCurrent);
     void SimulationPeriodic();
+    units::ampere_t GetDriveMotorCurrent();
+    units::ampere_t GetSteerMotorCurrent();
 
   private:
     ctre::phoenix::motorcontrol::can::TalonFXConfiguration ConfigureBaseMotorControllerSettings();
