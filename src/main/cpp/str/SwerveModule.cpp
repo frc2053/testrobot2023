@@ -155,6 +155,12 @@ ctre::phoenix::motorcontrol::can::TalonFXConfiguration str::SwerveModule::Config
 void str::SwerveModule::ConfigureDriveMotor() {
   ctre::phoenix::motorcontrol::can::TalonFXConfiguration baseConfig = ConfigureBaseMotorControllerSettings();
 
+  //add current limiting for drive
+  baseConfig.supplyCurrLimit.enable = true;
+  baseConfig.supplyCurrLimit.currentLimit = 40;
+  baseConfig.supplyCurrLimit.triggerThresholdCurrent = 0;
+  baseConfig.supplyCurrLimit.triggerThresholdTime = 0;
+
   // Configure base settings
   driveMotorController.ConfigAllSettings(baseConfig);
 
@@ -173,6 +179,8 @@ void str::SwerveModule::ConfigureSteeringMotor() {
   steerMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
 
   steerMotor.EnableVoltageCompensation(12);
+
+  steerMotor.SetSmartCurrentLimit(40);
 
   steerMotor.SetPID(
     str::swerve_drive_consts::STEER_KP, 
