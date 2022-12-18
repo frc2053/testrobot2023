@@ -48,6 +48,8 @@ void DrivebaseSubsystem::ProcessVisionData() {
       int aprilTagId = target.GetFiducialId();
       frc::Pose3d tagPose = tagLayout.GetTagPose(aprilTagId).value();
       frc::Pose3d estimatedRobotPose = frc::ObjectToRobotPose(tagPose, bestCameraToTarget, str::vision::CAMERA_TO_ROBOT);
+      str::Field::GetInstance().SetObjectPosition("found-tag-" + std::to_string(aprilTagId), tagPose.ToPose2d());
+      str::Field::GetInstance().SetObjectPosition("Robot Vision Pose Estimate", estimatedRobotPose.ToPose2d());
       swerveDrivebase.AddVisionMeasurementToPoseEstimator(estimatedRobotPose.ToPose2d(), result.GetTimestamp());
       detectedVisionDataForNt.push_back(tagPose.X().to<double>());
       detectedVisionDataForNt.push_back(tagPose.Y().to<double>()); 
