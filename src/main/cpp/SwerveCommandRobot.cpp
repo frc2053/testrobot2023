@@ -15,72 +15,45 @@ void SwerveCommandRobot::ConfigureBindings() {
   //   }
   // ));
 
-  autoChooser.SetDefaultOption("Test Path One", 
-    driveSubsystem.FollowPathFactory(
-      15_fps,
-      200_mps_sq,
-      frc::Pose2d(25_ft, 6_ft, 90_deg),
-      {
-        frc::Pose2d(25_ft, 0.75_ft, 90_deg),
-        frc::Pose2d(16.78_ft, 6.453_ft, 45_deg),
-        frc::Pose2d(3.5_ft, 3.8_ft, 45_deg),
-      },
-      frc::Pose2d(20.5_ft, 8.4_ft, 45_deg),
-      false
-    ).WithTimeout(16_s).get()
-  );
+  autoChooser.SetDefaultOption("Test Path One", autoOne.get());
 
-  autoChooser.AddOption("Test Path Two", 
-    driveSubsystem.FollowPathFactory(
-      15_fps,
-      200_mps_sq,
-      frc::Pose2d(10_ft, 6_ft, 90_deg),
-      {
-        frc::Pose2d(15_ft, 6_ft, 90_deg),
-      },
-      frc::Pose2d(20_ft, 6_ft, 90_deg),
-      false
-    ).WithTimeout(16_s).get()
-  );
+  autoChooser.AddOption("Test Path Two", autoTwo.get());
 
   frc::SmartDashboard::PutData("Auto Chooser", &autoChooser);
 
   frc::SmartDashboard::PutData("PDP", str::PDP::GetInstance().GetPDP());
 
   driveSubsystem.SetDefaultCommand(driveSubsystem.DriveFactory(
-    [this] {
-      return frc::ApplyDeadband<double>(-driverController.GetLeftY(), 0.2);
-    },
-    [this] {
-      return frc::ApplyDeadband<double>(-driverController.GetLeftX(), 0.2);
-    },
-    [this] {
-      return frc::ApplyDeadband<double>(-driverController.GetRightX(), 0.2);
-    }
-  ));
+      [this] {
+        return frc::ApplyDeadband<double>(-driverController.GetLeftY(), 0.2);
+      },
+      [this] {
+        return frc::ApplyDeadband<double>(-driverController.GetLeftX(), 0.2);
+      },
+      [this] {
+        return frc::ApplyDeadband<double>(-driverController.GetRightX(), 0.2);
+      }));
 
   frc::SmartDashboard::PutNumber("ResetPose/x_ft", 0);
   frc::SmartDashboard::PutNumber("ResetPose/y_ft", 0);
   frc::SmartDashboard::PutNumber("ResetPose/rot_deg", 0);
 
   frc::SmartDashboard::PutData(
-    "Reset Drivetrain Pose",
-    driveSubsystem
-      .ResetOdomFactory(
-        [this] {
-          return frc::SmartDashboard::GetNumber("ResetPose/x_ft", 0);
-        },
-        [this] {
-          return frc::SmartDashboard::GetNumber("ResetPose/y_ft", 0);
-        },
-        [this] {
-          return frc::SmartDashboard::GetNumber("ResetPose/rot_deg", 0);
-        }
-      )
-      .get()
-  );
+      "Reset Drivetrain Pose",
+      driveSubsystem
+          .ResetOdomFactory(
+              [this] {
+                return frc::SmartDashboard::GetNumber("ResetPose/x_ft", 0);
+              },
+              [this] {
+                return frc::SmartDashboard::GetNumber("ResetPose/y_ft", 0);
+              },
+              [this] {
+                return frc::SmartDashboard::GetNumber("ResetPose/rot_deg", 0);
+              })
+          .get());
 }
 
-frc2::Command* SwerveCommandRobot::GetAutonomousCommand() {
+frc2::Command *SwerveCommandRobot::GetAutonomousCommand() {
   return autoChooser.GetSelected();
 }
