@@ -21,5 +21,5 @@ public:
 private:
   SwerveCommandRobot robot;
 
-  std::optional<frc2::CommandPtr> autonomousCommand;
+  frc2::Command* autonomousCommand = nullptr;
 };

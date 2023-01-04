@@ -15,6 +15,36 @@ void SwerveCommandRobot::ConfigureBindings() {
   //   }
   // ));
 
+  autoChooser.SetDefaultOption("Test Path One", 
+    driveSubsystem.FollowPathFactory(
+      15_fps,
+      200_mps_sq,
+      frc::Pose2d(25_ft, 6_ft, 90_deg),
+      {
+        frc::Pose2d(25_ft, 0.75_ft, 90_deg),
+        frc::Pose2d(16.78_ft, 6.453_ft, 45_deg),
+        frc::Pose2d(3.5_ft, 3.8_ft, 45_deg),
+      },
+      frc::Pose2d(20.5_ft, 8.4_ft, 45_deg),
+      false
+    ).WithTimeout(16_s).get()
+  );
+
+  autoChooser.AddOption("Test Path Two", 
+    driveSubsystem.FollowPathFactory(
+      15_fps,
+      200_mps_sq,
+      frc::Pose2d(10_ft, 6_ft, 90_deg),
+      {
+        frc::Pose2d(15_ft, 6_ft, 90_deg),
+      },
+      frc::Pose2d(20_ft, 6_ft, 90_deg),
+      false
+    ).WithTimeout(16_s).get()
+  );
+
+  frc::SmartDashboard::PutData("Auto Chooser", &autoChooser);
+
   frc::SmartDashboard::PutData("PDP", str::PDP::GetInstance().GetPDP());
 
   driveSubsystem.SetDefaultCommand(driveSubsystem.DriveFactory(
@@ -51,18 +81,15 @@ void SwerveCommandRobot::ConfigureBindings() {
   );
 }
 
-frc2::CommandPtr SwerveCommandRobot::GetAutonomousCommand() {
-  // An example command will be run in autonomous
+frc2::Command* SwerveCommandRobot::GetAutonomousCommand() {
   return driveSubsystem.FollowPathFactory(
-    15_fps,
-    200_mps_sq,
-    frc::Pose2d{25_ft, 6_ft, 90_deg},
-    {
-      frc::Pose2d{25_ft, 0.75_ft, 90_deg},
-      frc::Pose2d{16.78_ft, 6.453_ft, 45_deg},
-      frc::Pose2d{3.5_ft, 3.8_ft, 45_deg},
-    },
-    frc::Pose2d{20.5_ft, 8.4_ft, 45_deg},
-    false
-  ).WithTimeout(16_s);
+      15_fps,
+      200_mps_sq,
+      frc::Pose2d(10_ft, 6_ft, 90_deg),
+      {
+        frc::Pose2d(15_ft, 6_ft, 90_deg),
+      },
+      frc::Pose2d(20_ft, 6_ft, 90_deg),
+      false
+    ).WithTimeout(16_s).get();
 }

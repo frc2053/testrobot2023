@@ -88,6 +88,8 @@
     "typeinfo": "cpp",
     "variant": "cpp",
     "*.inc": "cpp",
-    "core": "cpp"
+    "core": "cpp",
+    "xstddef": "cpp",
+    "xtr1common": "cpp"
   }
 }
