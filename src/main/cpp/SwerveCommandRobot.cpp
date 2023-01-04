@@ -82,14 +82,5 @@ void SwerveCommandRobot::ConfigureBindings() {
 }
 
 frc2::Command* SwerveCommandRobot::GetAutonomousCommand() {
-  return driveSubsystem.FollowPathFactory(
-      15_fps,
-      200_mps_sq,
-      frc::Pose2d(10_ft, 6_ft, 90_deg),
-      {
-        frc::Pose2d(15_ft, 6_ft, 90_deg),
-      },
-      frc::Pose2d(20_ft, 6_ft, 90_deg),
-      false
-    ).WithTimeout(16_s).get();
+  return autoChooser.GetSelected();
 }
