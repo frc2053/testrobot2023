@@ -1,6 +1,6 @@
 #pragma once
 
-/*#include <TimeOfFlight.h>
+#include <TimeOfFlight.h>
 #include <frc/filter/MedianFilter.h>
 #include <units/length.h>
 #include <units/time.h>
@@ -37,4 +37,4 @@ namespace str {
     bool isConnected{true};
     bool simulateSensor{false};
   };
-}*/   
+}

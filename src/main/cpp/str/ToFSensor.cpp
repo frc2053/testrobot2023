@@ -1,4 +1,4 @@
-/*#include "str/ToFSensor.h"
+#include "str/ToFSensor.h"
 #include <frc/DataLogManager.h>
 #include <frc/RobotBase.h>
 #include <iostream>
@@ -30,7 +30,7 @@ void str::ToFSensor::SetSensorMode(const frc::TimeOfFlight::RangingMode& newMode
 
 void str::ToFSensor::SetSampleTime(units::millisecond_t sampleTime) {
   sensor.SetRangingMode(currentRangingMode, sampleTime.to<double>());
-  frc::DataLogManager::Log("ToF sampele time set to: " + units::to_string(sampleTime));
+  frc::DataLogManager::Log("ToF sample time set to: " + units::to_string(sampleTime));
 }
 
 units::meter_t str::ToFSensor::GetRawDistance() {
@@ -137,4 +137,4 @@ void str::ToFSensor::InitSendable(wpi::SendableBuilder& builder) {
     },
     nullptr
   );
-}*/
+}
